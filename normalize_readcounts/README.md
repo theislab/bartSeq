@@ -22,7 +22,8 @@ EnvStats
 
 ```
 
-
+### Examples
+The code provided is based on the example: NGS12_Lib1.xlsx
 
 ## Authors
 
