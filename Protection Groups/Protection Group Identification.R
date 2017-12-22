@@ -25,11 +25,11 @@
 
 
 # Working directory
-WD = "D:/Users/fatma.uzbas/Desktop/Manuscript/R for Manuscript/"
+WD = "D:/Users/fatma.uzbas/Desktop/Protection Groups"
 setwd(WD)
 
 # Load the RData
-load("D:/Users/fatma.uzbas/Desktop/Manuscript/R for Manuscript/results_motifs.RData")
+load("D:/Users/fatma.uzbas/Desktop/Protection Groups/results_motifs.RData")
 
 
 # install.packages("gplots")
