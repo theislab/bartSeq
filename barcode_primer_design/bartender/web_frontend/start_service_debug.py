@@ -21,7 +21,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'cfg'])
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-with open("config.cfg", "r") as f:
+with open("../config.cfg", "r") as f:
     predefined_config = f.read()
 
 class MyForm(Form):
@@ -62,7 +62,7 @@ def primerselect():
         else:
             filename = "web_frontend/primer3_settings.txt"
 
-        config_handle = open("config.cfg", 'rU')
+        config_handle = open("../config.cfg", 'rU')
         config = PsConfigurationHandler.read_config(config_handle)
         config_handle.close()
         config.p3_config_path = filename
@@ -96,7 +96,7 @@ def p3seq():
             else:
                 filename = "primer3_settings.txt"
 
-            config_handle = open("config.cfg", 'rU')
+            config_handle = open("../config.cfg", 'rU')
             config = PsConfigurationHandler.read_config(config_handle)
             config_handle.close()
             config.p3_config_path = filename
@@ -123,4 +123,4 @@ def plot():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host="0.0.0.0", debug=True, port=5055)
+    app.run(host="localhost", debug=True, port=5055)

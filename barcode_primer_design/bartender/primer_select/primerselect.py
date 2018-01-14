@@ -25,10 +25,10 @@ parser.add_argument("-predefined", dest="predefined",
 
 args = parser.parse_args()
 
-if not os.path.isfile("config.cfg"):
-    PsConfigurationHandler.write_standard_config("config.cfg")
+if not os.path.isfile("../config.cfg"):
+    PsConfigurationHandler.write_standard_config("../config.cfg")
 
-config_handle = open("config.cfg", 'rU')
+config_handle = open("../config.cfg", 'rU')
 config = PsConfigurationHandler.read_config(config_handle)
 config_handle.close()
 

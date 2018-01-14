@@ -17,6 +17,9 @@ class P3Parser:
         content = ConfigParser.RawConfigParser()
         content.readfp(ini_fp)
 
+
+        print(content)
+
         num_primers = content.getint('root', 'PRIMER_PAIR_NUM_RETURNED')
         for i in range(num_primers):
             loc = map(int, content.get('root', 'PRIMER_LEFT_' + str(i)).split(","))

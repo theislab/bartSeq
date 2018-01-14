@@ -18,6 +18,7 @@ class Blaster:
 
     def run_task(self, input):
         cmd = self.config.blast_path + " -p blastn -r 1 -G -5 -E -5 -m 8 -d " + os.path.join(self.config.blast_dbpath, self.config.blast_dbname)
+        print(cmd)
         print("BLASTing primer " + str.split(str(input), "_")[0])
         p = subprocess.Popen(shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         r_string = p.communicate(str(input))[0].strip()

@@ -108,8 +108,14 @@ class PrimerPredictor:
 
                 cmd = self.config.p3_path + " -p3_settings_file=" + self.config.p3_config_path
                 args = shlex.split(cmd)
+
+                print(input_string)
+
+
                 p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+
                 p3_output = p.communicate(input_string)[0].strip()
+                print(p3_output)
 
                 m = re.search('(?<=PRIMER_ERROR=)\w+', p3_output)
                 if m is not None:

@@ -9,7 +9,7 @@ from flask_wtf import Form
 from p3seq.p3seq import P3Seq
 from primer_select.ps_configuration import PsConfigurationHandler
 from primer_select.run_process import PrimerSelect
-from werkzeug import secure_filename
+from werkzeug.utils import secure_filename
 from web_frontend.display.format_primerpair import PrimerSetFormatter
 from web_frontend.display.seq_plot import SeqPlotter
 
@@ -21,7 +21,7 @@ ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'cfg'])
 app = Flask(__name__)
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-with open("../config.cfg", "r") as f:
+with open("/barcode_primer_design/bartender/config.cfg", "r") as f:
     predefined_config = f.read()
 
 class MyForm(Form):
@@ -57,13 +57,21 @@ def primerselect():
         else:
             predefined = None
         try:
-            if form.configuration.data.filename != "":
+            try:
                 filename = secure_filename(os.path.join("uploads", form.configuration.data.filename))
                 form.configuration.data.save(filename)
-            else:
-                filename = "web_frontend/primer3_settings.txt"
+            except AttributeError as e:
+                filename = "/barcode_primer_design/bartender/web_frontend/primer3_settings.txt"
+#            if form.configuration.data.filename != "":
+ #               filename = secure_filename(os.path.join("uploads", form.configuration.data.filename))
+  #              form.configuration.data.save(filename)
+   #         else:
+    #            filename = "primer3_settings.txt"
 
-            config_handle = open("config.cfg", 'rU')
+
+
+
+            config_handle = open("/barcode_primer_design/bartender/config.cfg", 'rU')
             config = PsConfigurationHandler.read_config(config_handle)
             config_handle.close()
             config.p3_config_path = filename
@@ -77,6 +85,7 @@ def primerselect():
             output = PrimerSelect.output(opt_result, sequence_set)
             pretty_output = Markup(PrimerSetFormatter.format_primer_set(opt_result, sequence_set))
         except Exception as inst:
+            raise
             print(inst)
             return render_template('primerselect.html', form=form, error=inst.args[0])
         return render_template('primerselect.html', form=form, output=output, pretty_output=pretty_output)
@@ -95,9 +104,10 @@ def p3seq():
                 filename = secure_filename(os.path.join("uploads", form.configuration.data.filename))
                 form.configuration.data.save(filename)
             else:
-                filename = "primer3_settings.txt"
+                filename = "/barcode_primer_design/bartender/web_frontend/primer3_settings.txt"
 
-            config_handle = open("../config.cfg", 'rU')
+
+            config_handle = open("/barcode_primer_design/bartender/config.cfg", 'rU')
             config = PsConfigurationHandler.read_config(config_handle)
             config_handle.close()
             config.p3_config_path = filename
