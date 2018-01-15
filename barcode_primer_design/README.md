@@ -13,7 +13,7 @@ git clone https://github.com/theislab/bartSeq.git
 
 As files are too big please download fasta files for blasting
 
-download human genome Hg38 from here, unpack -> move to databases folde
+Download human genome Hg38 from here, unpack -> move to `databases` folder. Additionally load databases:
 
 ```
 wget http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz`
@@ -23,6 +23,15 @@ unpack and move to database directory
 ```
 makeblastdb -in hg38.fa -dbtype nucl -title hg38
 ```
+
+Implemented are options to select the following databases with respective [filename].
+
+- UCSC Genome hg38 [hg38.fa]
+- UCSC Genome hg19 [hg19ucsc]
+- RefSeq mRNA [refMrna.fa]
+- GenBank mRNA [mrna.fa]
+
+
 
 ### 3. Build docker container
 
