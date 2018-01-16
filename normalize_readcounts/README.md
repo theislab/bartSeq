@@ -6,7 +6,7 @@
 
 ### Prerequisites
 
-The script is implemented in R statistical software and requires the following packages.
+The script **CorrectionNormalizationBART.R** is implemented in R statistical software and requires the following packages.
 
 ```
 readxl
@@ -19,11 +19,10 @@ xlsx
 scales
 ggplot2
 EnvStats
-
 ```
 
 ### Examples
-The code provided is based on the example: NGS12_Lib1.xlsx
+The script provided is based on the example: **NGS12_Lib1.xlsx**
 
 ## Authors
 
