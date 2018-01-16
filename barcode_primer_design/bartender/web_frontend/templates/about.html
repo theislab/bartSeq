@@ -1,0 +1,63 @@
+
+{% extends "base.html" %}
+{% block title %}PrimerSelect{% endblock %}
+{% block content %}
+<div class="page-header">
+    <br>
+
+    <h1>About PrimerSelect</h1>
+</div>
+
+
+<div role='tabpanel'>
+
+    <div class='tab-content'>
+
+        Primerselect is developed and hosted at Institute of Computational Biology,
+        Helmholtz Zentrum München, Germany.
+
+
+
+
+    </div>
+<script>
+    $('#myTab a').click(function (e) {
+        e.preventDefault()
+        $(this).tab('show')
+    })
+</script>
+
+<br>
+
+</div>
+
+{% if pretty_output %}
+{{ pretty_output }}
+{% endif %}<br><br>
+
+{% if output %}
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    Show text output
+</button>
+
+<div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Text output</h4>
+            </div>
+            <div class="modal-body">
+                <p style="white-space: pre-wrap;">
+                    {{ output }}
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+        <br>

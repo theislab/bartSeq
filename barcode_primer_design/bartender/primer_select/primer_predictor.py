@@ -119,7 +119,7 @@ class PrimerPredictor:
 
                 m = re.search('(?<=PRIMER_ERROR=)\w+', p3_output)
                 if m is not None:
-                    raise Exception("Error for sequence " + record.id + ": " + m.group(0))
+                    raise Exception("Error for sequence (Probably no primer found in region): " + record.id + ": " + m.group(0)+"\n Start NEW Primerprediction.")
 
                 primer_set = PrimerPairSet(record.id)
                 P3Parser.parse_p3_information(primer_set, p3_output)

@@ -45,7 +45,12 @@ class P3seqForm(Form):
 
 @app.route('/')
 def main_page():
-    return render_template('main.html')
+    return  primerselect()
+
+@app.route('/about')
+def about_page():
+    return render_template('about.html')
+
 
 @app.route('/primerselect', methods=('GET', 'POST'))
 def primerselect():
@@ -62,14 +67,6 @@ def primerselect():
                 form.configuration.data.save(filename)
             except AttributeError as e:
                 filename = "/barcode_primer_design/bartender/web_frontend/primer3_settings.txt"
-#            if form.configuration.data.filename != "":
- #               filename = secure_filename(os.path.join("uploads", form.configuration.data.filename))
-  #              form.configuration.data.save(filename)
-   #         else:
-    #            filename = "primer3_settings.txt"
-
-
-
 
             config_handle = open("/barcode_primer_design/bartender/config.cfg", 'rU')
             config = PsConfigurationHandler.read_config(config_handle)
@@ -93,35 +90,35 @@ def primerselect():
 
 
 
-@app.route('/p3seq', methods=('GET', 'POST'))
-def p3seq():
-    form = P3seqForm()
+#@app.route('/p3seq', methods=('GET', 'POST'))
+#def p3seq():
+#    form = P3seqForm()
+#
+#    if form.validate_on_submit():
+#        input_string = StringIO.StringIO(form.input.data)
+#        try:
+#            if form.configuration.data.filename != "":
+#                filename = secure_filename(os.path.join("uploads", form.configuration.data.filename))
+#                form.configuration.data.save(filename)
+#            else:
+#                filename = "/barcode_primer_design/bartender/web_frontend/primer3_settings.txt"
+#
+#
+#            config_handle = open("/barcode_primer_design/bartender/config.cfg", 'rU')
+#            config = PsConfigurationHandler.read_config(config_handle)
+#            config_handle.close()
+#            config.p3_config_path = filename
+#
+#            p3_seq = P3Seq(config, input_string)
+#            output = p3_seq.run(form.spacing.data.split(","), form.interval.data.split(","))
+#            output_html = PrimerSetFormatter.format_seq_primer(output)
+#            return render_template('p3seq.html', form=form, output=Markup(output_html))
+#        except Exception as inst:
+#            print(inst)
+#            return render_template('p3seq.html', form=form, error=inst.args[0])
 
-    if form.validate_on_submit():
-        input_string = StringIO.StringIO(form.input.data)
-        try:
-            if form.configuration.data.filename != "":
-                filename = secure_filename(os.path.join("uploads", form.configuration.data.filename))
-                form.configuration.data.save(filename)
-            else:
-                filename = "/barcode_primer_design/bartender/web_frontend/primer3_settings.txt"
 
-
-            config_handle = open("/barcode_primer_design/bartender/config.cfg", 'rU')
-            config = PsConfigurationHandler.read_config(config_handle)
-            config_handle.close()
-            config.p3_config_path = filename
-
-            p3_seq = P3Seq(config, input_string)
-            output = p3_seq.run(form.spacing.data.split(","), form.interval.data.split(","))
-            output_html = PrimerSetFormatter.format_seq_primer(output)
-            return render_template('p3seq.html', form=form, output=Markup(output_html))
-        except Exception as inst:
-            print(inst)
-            return render_template('p3seq.html', form=form, error=inst.args[0])
-
-
-    return render_template('p3seq.html', form=form)
+#    return render_template('p3seq.html', form=form)
 
 
 @app.route('/plot.png')

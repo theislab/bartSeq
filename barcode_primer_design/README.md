@@ -39,7 +39,7 @@ Build docker and run it. Running the container will start the web service reacha
 
 ```
 docker build -t bartender .
-docker run --rm -it bartender
+docker run --rm -it -p 5000:5000 bartender
 ```
 
 ## EXAMPLE
@@ -54,7 +54,7 @@ For development we can mount the code as follows by commenting out adding softwa
 
 
 ```
-docker run --rm -it -v /Users/nikola/planA/projects/mini-projects/bartseq\ drukker/manuscript/codePublic/bartSeq/barcode_primer_design:/barcode_primer_design -p 5000:5000 bartender
+docker run --rm -it -v /absolute/path/to/bartSeq/barcode_primer_design:/barcode_primer_design -p 5000:5000 bartender
 
 python /barcode_primer_design/bartender/web_frontend/start_service.py
 

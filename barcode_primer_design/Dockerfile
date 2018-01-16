@@ -44,9 +44,9 @@ ADD databases /barcode_primer_design/databases
 ADD primer3_config /barcode_primer_design/primer3_config
 
 # add sofware to pythonpath
-ENV PYTHONPATH='$PYTHONPATH:/bartender'
+ENV PYTHONPATH='$PYTHONPATH:/barcode_primer_design/bartender/'
 
 
 
 # start bartender service
-ENTRYPOINT ['python', '/barcode_primer_design/bartender/web_frontend/start_dervice.py']
+ENTRYPOINT ["python", "/barcode_primer_design/bartender/web_frontend/start_service.py"]
