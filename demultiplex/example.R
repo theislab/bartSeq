@@ -105,8 +105,8 @@ source(glue("{HERE}/src/fastq2count.R"))
 check_binaries(
 	fastqc = "FastQC quality control: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/",
 	flash = "Fast Length Adjustment of SHort reads: https://ccb.jhu.edu/software/FLASH/",
-	formatdb = "BLAST (indexing): http://nebc.nox.ac.uk/bioinformatics/docs/formatdb.html",
-	blastall = "BLAST: http://nebc.nox.ac.uk/bioinformatics/docs/blastall.html")
+	makeblastdb = "BLAST (indexing): http://nebc.nox.ac.uk/bioinformatics/docs/makeblastdb.html",
+	blastn = "BLAST: http://nebc.nox.ac.uk/bioinformatics/docs/blastn.html")
 
 call_mapping(
 	lib_loc = glue("{res_loc}/rawdata"),

@@ -61,10 +61,10 @@ generate_inserts <- function(res_loc, run_blast) {
 	if (run_blast) {
 		writeXStringSet(inserts, glue("{res_loc}/blast/inserts.fa"), width = 10000)
 		blast_out <- try(system2(
-			"formatdb", c(
-				"-p", "F",                                 # nucleotides
-				"-i", glue("{res_loc}/blast/inserts.fa"),  # Input file
-				"-n", glue("{res_loc}/blast/inserts")      # index file basename
+			"makeblastdb", c(
+				"-dbtype", "nucl",                          # nucleotides
+				"-in", glue("{res_loc}/blast/inserts.fa"),  # Input file
+				"-out", glue("{res_loc}/blast/inserts")     # index file basename
 			), stdout = TRUE))
 	}
 }
@@ -99,15 +99,12 @@ blast_reads <- function(res_loc, bc_splitter, bc_mismatch, run_blast, queue) {
 						"if (NR%4==1) print \">\"((NR-1)/4)+1;",
 						"if (NR%4==2) print",
 					"}}' > {path_reads}\n",
-				"blastall", # https://www.ncbi.nlm.nih.gov/Class/BLAST/blastallopts.txt
-					"-p blastn",                # Nucleotide blast
-					"-r 1",                     # Reward for nucleotide match
-					"-G -1",                    # Cost to open a gap
-					"-E -1",                    # Cost to extend a gap
-					"-m 8",                     # alignment view: tabular
-					"-d {path_inserts}",        # Database file
-					"-i {path_reads}",          # Query file
-					"-o {path_res_inserts}\n",  # Report output file
+				"blastn",  # https://www.ncbi.nlm.nih.gov/books/NBK279684/
+					"-reward 1 -gapopen -1 -gapextend -1",
+					"-outfmt 6",                  # alignment view: tabular
+					"-db {path_inserts}",         # Database file
+					"-query {path_reads}",        # Query file
+					"-out {path_res_inserts}\n",  # Report output file
 				.sep = " ",
 				.transformer = shell_transformer)
 			cat(script)
