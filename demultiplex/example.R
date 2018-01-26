@@ -21,8 +21,10 @@ here <- function() {
 	file <-
 		if (length(match) > 0) # Rscript
 			sub(needle, "", args[match])
-		else # 'source'd via R console
+		else if (!is.null(sys.frames()[[1]]$ofile)) # 'source'd via R console
 			sys.frames()[[1]]$ofile
+		else # rstudio debugSource
+			sys.frames()[[1]]$fileName
 	normalizePath(dirname(file))
 }
 

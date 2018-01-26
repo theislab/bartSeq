@@ -58,10 +58,7 @@ merge_paired_ends <- function(lib_loc, res_loc) {
 generate_inserts <- function(res_loc, run_blast) {
 	am_loc <- glue("{res_loc}/amplicons")
 	sample_desc <- read.delim(glue("{am_loc}/amplicons.txt"))
-	fasta <- vapply(seq_len(nrow(sample_desc)), function(i) {
-		c(paste0(">", sample_desc$Gene[i]),
-		toupper(sample_desc$Amplicon[i]))
-	}, character(1L))
+	fasta <- glue_data(sample_desc, "> {Gene}\n{toupper(Amplicon)}")
 	write(fasta, sep = "\n", file = glue("{am_loc}/inserts.txt"))
 	inserts <- readDNAStringSet(glue("{am_loc}/inserts.txt"))
 	# blast to match each insert to human genes
@@ -88,6 +85,7 @@ get_barcode_combinations <- function(res_loc) {
 
 # blast the reads and in parallel perform barcode identification
 blast_reads <- function(res_loc, bc_splitter, bc_mismatch, run_blast, queue) {
+	dir.create(path = glue("{res_loc}/blast"), recursive = TRUE)
 	# read in fastq
 	files <- list.files(glue("{res_loc}/processed_data"), pattern = "extendedFrags", full.names = TRUE)
 	# split basename with "."
