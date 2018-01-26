@@ -62,9 +62,9 @@ generate_inserts <- function(res_loc, run_blast) {
 		writeXStringSet(inserts, glue("{res_loc}/blast/inserts.fa"), width = 10000)
 		blast_out <- try(system2(
 			"formatdb", c(
-				"-p", "F",
-				"-i", glue("{res_loc}/blast/inserts.fa"),
-				"-n", glue("{res_loc}/blast/inserts")
+				"-p", "F",                                 # nucleotides
+				"-i", glue("{res_loc}/blast/inserts.fa"),  # Input file
+				"-n", glue("{res_loc}/blast/inserts")      # index file basename
 			), stdout = TRUE))
 	}
 }
@@ -94,9 +94,22 @@ blast_reads <- function(res_loc, bc_splitter, bc_mismatch, run_blast, queue) {
 			path_inserts <- glue("{res_loc}/blast/inserts")
 			path_res_inserts <- glue("{res_loc}/blast/{id}_res_inserts.txt")
 			script <- glue(
-				"cat {files[id]} | awk '{ if (NR%4==1) print \">\"((NR-1)/4)+1; if (NR%4==2) print }' >{path_reads}",
-				"blastall -p blastn -r 1 -G -1 -E -1 -m 8 -d {path_inserts} -i {path_reads} -o {path_res_inserts}",
-				"", .sep = "\n", .transformer = shell_transformer)
+				"cat {files[id]}",
+					"| awk '{{",
+						"if (NR%4==1) print \">\"((NR-1)/4)+1;",
+						"if (NR%4==2) print",
+					"}}' > {path_reads}\n",
+				"blastall", # https://www.ncbi.nlm.nih.gov/Class/BLAST/blastallopts.txt
+					"-p blastn",                # Nucleotide blast
+					"-r 1",                     # Reward for nucleotide match
+					"-G -1",                    # Cost to open a gap
+					"-E -1",                    # Cost to extend a gap
+					"-m 8",                     # alignment view: tabular
+					"-d {path_inserts}",        # Database file
+					"-i {path_reads}",          # Query file
+					"-o {path_res_inserts}\n",  # Report output file
+				.sep = " ",
+				.transformer = shell_transformer)
 			cat(script)
 			
 			blast_out <- try(
