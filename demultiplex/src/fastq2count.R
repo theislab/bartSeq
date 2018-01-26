@@ -25,35 +25,43 @@ get_qc <- function(lib_loc, res_loc) {
 	dir.create(path = qc_loc, recursive = TRUE, showWarnings = FALSE)
 	
 	reads <- list.files(path = lib_loc, pattern = ".gz", full.names = TRUE)
-	lapply(seq_along(reads), FUN = function(i){
-		i.read <- reads[i]
-		system2("fastqc", c(i.read, "-o", qc_loc)) 
-	})
+	for (read in reads) {
+		out_name <- basename(sub('\\.fastq\\.gz$', '_fastqc.html', read))
+		if (file.exists(file.path(qc_loc, out_name))) {
+			message(glue("QC files exist. Skipping creation of {out_name} and *.zip"))
+			next
+		}
+		system2("fastqc", c(read, "-o", qc_loc)) 
+	}
 }
 
 # merging the overlapping paired reads using FLASH
 merge_paired_ends <- function(lib_loc, res_loc) {
-	pdata.loc <- glue("{res_loc}/processed_data")
-	dir.create(path = pdata.loc, recursive = TRUE, showWarnings = FALSE)
+	pdata_loc <- glue("{res_loc}/processed_data")
+	dir.create(path = pdata_loc, recursive = TRUE, showWarnings = FALSE)
 	
 	read1s <- list.files(path = lib_loc, pattern = "R1.+gz", full.names = TRUE)
-	lapply(seq_along(read1s), FUN = function(i) {
-		reads_1.fq <- read1s[i]
-		reads_2.fq <- sub("R1", "R2", read1s[i])
-		if (file.exists(reads_1.fq) & file.exists(reads_2.fq)) {
-			system2("flash", paste(reads_1.fq, reads_2.fq, "-M", "150", "-o", sub("_R1.*", "", basename(reads_1.fq)), "-d", pdata.loc))
+	for (reads_1.fq in read1s) {
+		reads_2.fq <- sub("R1", "R2", reads_1.fq)
+		out_prefix <- sub("_R1.*", "", basename(reads_1.fq))
+		if (file.exists(reads_1.fq) && file.exists(reads_2.fq)) {
+			if (file.exists(glue("{pdata_loc}/{out_prefix}.hist"))) {
+				message(glue("Paired files exist. Skipping creation of {pdata_loc}/{out_prefix}.*"))
+				next
+			}
+			system2("flash", paste(reads_1.fq, reads_2.fq, "-M", "150", "-o", out_prefix, "-d", pdata_loc))
 		}
-	})
+	}
 }
 
 # formatting the reference amplicons to be used as blast reference database
 generate_inserts <- function(res_loc, run_blast) {
 	am_loc <- glue("{res_loc}/amplicons")
 	sample_desc <- read.delim(glue("{am_loc}/amplicons.txt"))
-	fasta <- unlist(lapply(seq_len(nrow(sample_desc)), FUN = function(i) {
+	fasta <- vapply(seq_len(nrow(sample_desc)), function(i) {
 		c(paste0(">", sample_desc$Gene[i]),
 		toupper(sample_desc$Amplicon[i]))
-	}))
+	}, character(1L))
 	write(fasta, sep = "\n", file = glue("{am_loc}/inserts.txt"))
 	inserts <- readDNAStringSet(glue("{am_loc}/inserts.txt"))
 	# blast to match each insert to human genes
