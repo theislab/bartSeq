@@ -27,7 +27,7 @@ get_qc <- function(lib_loc, res_loc) {
 	reads <- list.files(path = lib_loc, pattern = ".gz", full.names = TRUE)
 	lapply(seq_along(reads), FUN = function(i){
 		i.read <- reads[i]
-		system2("fastqc", c("fastqc", i.read, "-o", qc_loc)) 
+		system2("fastqc", c(i.read, "-o", qc_loc)) 
 	})
 }
 
