@@ -26,6 +26,18 @@ here <- function() {
 	normalizePath(dirname(file))
 }
 
+check_binaries <- function(...) {
+	bins <- list(...)
+	not_found <- Filter(Negate(is.na), vapply(names(bins), function(bin) {
+		if (system2("command", c("-v", bin), stdout = FALSE, stderr = FALSE) != 0) {
+			glue("`{bin}` {bins[[bin]]}")
+		} else {
+			NA_character_
+		}
+	}, character(1L)))
+	if (length(not_found) > 0) stop("Command(s) not found:\n", paste(not_found, collapse = "\n"))
+}
+
 parse_results <- function(results, res_loc, run_id) {
 	count.dir <- glue("{res_loc}/counts")
 	dir.create(path = count.dir, recursive = TRUE, showWarnings = FALSE)
@@ -89,6 +101,12 @@ res_loc <- "data/ngs21"
 
 # other scripts
 source(glue("{HERE}/src/fastq2count.R"))
+
+check_binaries(
+	fastqc = "FastQC quality control: https://www.bioinformatics.babraham.ac.uk/projects/fastqc/",
+	flash = "Fast Length Adjustment of SHort reads: https://ccb.jhu.edu/software/FLASH/",
+	formatdb = "BLAST (indexing): http://nebc.nox.ac.uk/bioinformatics/docs/formatdb.html",
+	blastall = "BLAST: http://nebc.nox.ac.uk/bioinformatics/docs/blastall.html")
 
 call_mapping(
 	lib_loc = glue("{res_loc}/rawdata"),
