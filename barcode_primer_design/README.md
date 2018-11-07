@@ -5,7 +5,7 @@
 
 ### 1.  Get repository
 
-```
+```bash
 git clone https://github.com/theislab/bartSeq.git
 ```
 
@@ -15,12 +15,13 @@ As files are too big please download fasta files for blasting
 
 Download human genome Hg38 from here, unpack -> move to `databases` folder. Additionally load databases:
 
+```bash
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
 ```
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz`
-```
+
 unpack and move to database directory
 
-```
+```bash
 makeblastdb -in hg38.fa -dbtype nucl -title hg38
 ```
 
@@ -37,7 +38,7 @@ Implemented are options to select the following databases with respective [filen
 
 Build docker and run it. Running the container will start the web service reachable at `http://0.0.0.0:5000/primerselect`
 
-```
+```bash
 docker build -t bartender .
 docker run --rm -it -p 5000:5000 bartender
 ```
@@ -53,9 +54,8 @@ Find example FASTA file and example of primer plus setting files in `example-inp
 For development we can mount the code as follows by commenting out adding software files to the docker container. Build it as described above and run container. Then start container service and edit files live from local computer.
 
 
-```
+```bash
 docker run --rm -it -v /absolute/path/to/bartSeq/barcode_primer_design:/barcode_primer_design -p 5000:5000 bartender
 
 python /barcode_primer_design/bartender/web_frontend/start_service.py
-
 ```
