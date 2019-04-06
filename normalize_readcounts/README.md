@@ -6,23 +6,19 @@
 
 ### Prerequisites
 
-The script **CorrectionNormalizationBART.R** is implemented in R statistical software and requires the following packages.
+The script **BARTseq_normalization_example.R** is implemented in R statistical software and requires the following packages.
 
 ```
 readxl
 reshape2
-MASS
+ggplot2
 gplots
-corrplot
 GGally
 xlsx
-scales
-ggplot2
-EnvStats
 ```
 
 ### Examples
-The script provided is based on the example: **NGS12_Lib1.xlsx**
+The script provided is based on the example: **BARTseq_sample_count_matrix.xlsx**
 
 ## Authors
 
