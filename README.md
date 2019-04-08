@@ -1,5 +1,5 @@
 # Software for Bart-Seq
-Software required for Bart-Seq technology – a cheap technology to analyze (single) cells using forward and reverse barcoding for target genes
+Software required for Bart-Seq – a cost-effective target enrichment technology using forward and reverse barcoding to analyze selected set of genes in single cells and/or bulk RNA/DNA samples
 
 ## Barcode design
 
