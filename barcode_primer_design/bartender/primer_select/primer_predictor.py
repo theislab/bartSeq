@@ -1,12 +1,14 @@
+import re
 import sys
 import shlex
 import subprocess
 
 from Bio import SeqIO
+from Bio.SeqFeature import SeqFeature, FeatureLocation
 
 from helpers.p3_parser import P3Parser
-from helpers.primerpair import *
-from helpers.primer import *
+from helpers.primerpair import PrimerPair, PrimerPairSet
+from helpers.primer import Primer, Amplicon, Gene, ExcludedRegion, TargetRegion
 
 
 class PrimerPredictor:
@@ -16,7 +18,6 @@ class PrimerPredictor:
         self.predefined_handle = predefined_handle
 
     def parse_predefined_pairs(self, predefined_sets):
-
         for record in SeqIO.parse(self.predefined_handle, "fasta"):
 
             cur_id = record.id.split("_")[0]
@@ -40,20 +41,19 @@ class PrimerPredictor:
                     ind = int(pair.name.split("_")[1])
                     if ind > pair_ind:
                         pair_ind = ind
-
-                act_set.set.append(
-                    PrimerPair(Primer(seqs[0], 0, 0), Primer(seqs[1], 0, 0, True), cur_id + "_" + str(pair_ind + 1),
-                               True))
+                pair_ind += 1
             else:
-                ps = PrimerPairSet(cur_id)
-                ps.set.append(
-                    PrimerPair(Primer(seqs[0], 0, 0), Primer(seqs[1], 0, 0, True),
-                               cur_id + "_" + str(pair_ind), True))
-                predefined_sets[cur_id] = ps
+                act_set = predefined_sets[cur_id] = PrimerPairSet(cur_id)
+
+            act_set.set.append(PrimerPair(
+                Primer(seqs[0], 0),
+                Primer(seqs[1], 0, reverse=True),
+                cur_id + "_" + str(pair_ind),
+                True,
+            ))
 
 
     def predict_primer_set(self):
-
         predefined_sets = dict()
         if self.predefined_handle is not None:
             self.parse_predefined_pairs(predefined_sets)
@@ -64,7 +64,7 @@ class PrimerPredictor:
             sequence = str(record.seq)
             for i, sel_sequence in enumerate(re.split('//', sequence)):
 
-                s = re.sub("\[|\]|\<|\>", "", sel_sequence)
+                s = re.sub(r"\[|\]|\<|\>", "", sel_sequence)
                 amplicon = Amplicon(s)
 
                 if record.id in predefined_sets:
@@ -79,7 +79,7 @@ class PrimerPredictor:
 
                 if sel_sequence.find("<") >= 0 and sel_sequence.find(">") >= 0:
                     input_string += "SEQUENCE_EXCLUDED_REGION="
-                    spl_sequence = re.split("\<|\>", sel_sequence.replace("[", "").replace("]", ""))
+                    spl_sequence = re.split(r"\<|\>", sel_sequence.replace("[", "").replace("]", ""))
                     for i in xrange(0, len(spl_sequence) - 1, 2):
                         start = 0
                         for j in xrange(0, i + 1):
@@ -94,7 +94,7 @@ class PrimerPredictor:
 
                 if sel_sequence.find("[") >= 0 and sel_sequence.find("]") >= 0:
                     input_string += "SEQUENCE_TARGET="
-                    spl_sequence = re.split("\[|\]", sel_sequence)
+                    spl_sequence = re.split(r"\[|\]", sel_sequence)
                     for i in xrange(0, len(spl_sequence) - 1, 2):
                         start = 0
                         for j in xrange(0, i + 1):
@@ -117,7 +117,7 @@ class PrimerPredictor:
                 p3_output = p.communicate(input_string)[0].strip()
                 print(p3_output)
 
-                m = re.search('(?<=PRIMER_ERROR=)\w+', p3_output)
+                m = re.search(r'(?<=PRIMER_ERROR=)\w+', p3_output)
                 if m is not None:
                     raise Exception("Error for sequence (Probably no primer found in region): " + record.id + ": " + m.group(0)+"\n Start NEW Primerprediction.")
 

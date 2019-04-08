@@ -1,13 +1,14 @@
-
 # Run Bartender software for optimal primer design for Bart-seq
 
 ## INSTALL
+
 
 ### 1.  Get repository
 
 ```bash
 git clone https://github.com/theislab/bartSeq.git
 ```
+
 
 ### 2. Download fasta databases
 
@@ -33,7 +34,6 @@ Implemented are options to select the following databases with respective [filen
 - GenBank mRNA [mrna.fa]
 
 
-
 ### 3. Build docker container
 
 Build docker and run it. Running the container will start the web service reachable at `http://0.0.0.0:5000/primerselect`
@@ -53,9 +53,7 @@ Find example FASTA file and example of primer plus setting files in `example-inp
 
 For development we can mount the code as follows by commenting out adding software files to the docker container. Build it as described above and run container. Then start container service and edit files live from local computer.
 
-
 ```bash
 docker run --rm -it -v /absolute/path/to/bartSeq/barcode_primer_design:/barcode_primer_design -p 5000:5000 bartender
-
-python /barcode_primer_design/bartender/web_frontend/start_service.py
+python2 /barcode_primer_design/bartender/web_frontend/start_service.py
 ```

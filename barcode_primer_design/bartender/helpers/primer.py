@@ -36,14 +36,21 @@ class TargetRegion(SeqFeature):
 
 
 class Primer(SeqFeature):
-    def __init__(self, sequence, start, length, reverse=False):
+    """
+    start is a position in python style, i.e. as an index.
+    """
+    def __init__(self, sequence, start, length=None, reverse=False):
         self.sequence = sequence
-        if reverse is True:
-            location = FeatureLocation(start - length + 1, start)
-            strand = -1
-        else:
-            location = FeatureLocation(start, start + length - 1)
+        if length is None:
+            length = len(sequence)
+        if not reverse:
+            # Python-style indexing, think range(start, start+length) or seq[start:start+length]
+            location = FeatureLocation(start, start + length)
             strand = +1
+        else:
+            # The same applies here: We are handling boundaries
+            location = FeatureLocation(start - length, start)
+            strand = -1
         SeqFeature.__init__(self, location, strand=strand)
 
     def __len__(self):

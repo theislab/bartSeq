@@ -17,7 +17,6 @@ flask-wtf
 werkzeug
 biopython
 reportlab
-
 ```
 
 ### Installing
@@ -31,8 +30,7 @@ Start the webserver with the following command, and the web app will be availabl
 http://localhost:5000/primerselect
 
 ```
-python webservices/start_services.py
-
+python2 webservices/start_services.py
 ```
 
 

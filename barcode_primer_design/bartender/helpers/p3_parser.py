@@ -11,7 +11,6 @@ class P3Parser:
 
     @staticmethod
     def parse_p3_information(primer_pair_set, p3output):
-
         ini_str = '[root]\n' + p3output[:len(p3output) - 1]
         ini_fp = StringIO.StringIO(ini_str)
         content = ConfigParser.RawConfigParser()
@@ -23,13 +22,15 @@ class P3Parser:
         num_primers = content.getint('root', 'PRIMER_PAIR_NUM_RETURNED')
         for i in range(num_primers):
             loc = map(int, content.get('root', 'PRIMER_LEFT_' + str(i)).split(","))
-            fwd = Primer(content.get('root', 'PRIMER_LEFT_' + str(i) + '_SEQUENCE'), loc[0], loc[1])
+            # python style indexing, so we subtract 1 from the start to get the index left from the start
+            fwd = Primer(content.get('root', 'PRIMER_LEFT_' + str(i) + '_SEQUENCE'), loc[0]-1, loc[1])
             fwd.gc_content = content.getfloat('root', 'PRIMER_LEFT_' + str(i) + '_GC_PERCENT')
             fwd.tm = content.getfloat('root', 'PRIMER_LEFT_' + str(i) + '_TM')
             fwd.any = content.getfloat('root', 'PRIMER_LEFT_' + str(i) + '_SELF_ANY_TH')
             fwd.self = content.getfloat('root', 'PRIMER_LEFT_' + str(i) + '_SELF_END_TH')
 
             loc = map(int, content.get('root', 'PRIMER_RIGHT_' + str(i)).split(","))
+            # python style indexing: we start at the index right of the end, and go left, so index and position are equal
             rev = Primer(content.get('root', 'PRIMER_RIGHT_' + str(i) + '_SEQUENCE'), loc[0], loc[1], True)
             rev.gc_content = content.getfloat('root', 'PRIMER_RIGHT_' + str(i) + '_GC_PERCENT')
             rev.tm = content.getfloat('root', 'PRIMER_RIGHT_' + str(i) + '_TM')
@@ -42,16 +43,15 @@ class P3Parser:
 
     @staticmethod
     def parse_p3seq_information(fwd_primer_set, rev_primer_set, p3output, sequence, p3options):
-
         ini_str = '[root]\n' + p3output[:len(p3output) - 1]
         ini_fp = StringIO.StringIO(ini_str)
         content = ConfigParser.RawConfigParser()
         content.readfp(ini_fp)
 
         for i in range(content.getint('root', 'PRIMER_LEFT_NUM_RETURNED')):
-
             loc = map(int, content.get('root', 'PRIMER_LEFT_' + str(i)).split(","))
-            fwd = Primer(content.get('root', 'PRIMER_LEFT_' + str(i) + '_SEQUENCE'), loc[0], loc[1])
+            # see comments in parse_p3_information
+            fwd = Primer(content.get('root', 'PRIMER_LEFT_' + str(i) + '_SEQUENCE'), loc[0]-1, loc[1])
             fwd.gc_content = content.getfloat('root', 'PRIMER_LEFT_' + str(i) + '_GC_PERCENT')
             fwd.tm = content.getfloat('root', 'PRIMER_LEFT_' + str(i) + '_TM')
             fwd.any = content.getfloat('root', 'PRIMER_LEFT_' + str(i) + '_SELF_ANY_TH')
@@ -66,8 +66,8 @@ class P3Parser:
                 fwd_primer_set.append(fwd)
 
         for i in range(content.getint('root', 'PRIMER_RIGHT_NUM_RETURNED')):
-
             loc = map(int, content.get('root', 'PRIMER_RIGHT_' + str(i)).split(","))
+            # see comments in parse_p3_information
             rev = Primer(content.get('root', 'PRIMER_RIGHT_' + str(i) + '_SEQUENCE'), loc[0], loc[1], True)
             rev.gc_content = content.getfloat('root', 'PRIMER_RIGHT_' + str(i) + '_GC_PERCENT')
             rev.tm = content.getfloat('root', 'PRIMER_RIGHT_' + str(i) + '_TM')

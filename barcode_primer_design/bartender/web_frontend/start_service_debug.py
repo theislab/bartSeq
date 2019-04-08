@@ -2,6 +2,7 @@ import os
 import StringIO
 import random
 import re
+import io
 from flask import *
 from wtforms import StringField, validators, TextAreaField, SelectField
 from flask_wtf.file import FileField, FileAllowed
@@ -59,6 +60,14 @@ def primerselect():
         if form.configuration.data.filename != "":
             filename = secure_filename(os.path.join("uploads", form.configuration.data.filename))
             form.configuration.data.save(filename)
+
+            # fix up config files
+            with io.open(filename, 'r') as infile:
+                lines = infile.readlines()
+                with io.open(filename, 'w', newline='\n') as outfile:
+                    for line in lines:
+                        line = line.replace('http://primer3.sourceforge.net', 'http://primer3.org')
+                        outfile.write(line)
         else:
             filename = "web_frontend/primer3_settings.txt"
 
