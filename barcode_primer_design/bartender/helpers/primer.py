@@ -34,12 +34,12 @@ class Gene:
 
 class ExcludedRegion(SeqFeature):
     def __init__(self, location: FeatureLocation):
-        super().__init__(self, location, None)
+        super().__init__(location, None)
 
 
 class TargetRegion(SeqFeature):
     def __init__(self, location: FeatureLocation):
-        super().__init__(self, location, None)
+        super().__init__(location, None)
 
 
 class Primer(SeqFeature):
@@ -65,7 +65,7 @@ class Primer(SeqFeature):
             # The same applies here: We are handling boundaries
             location = FeatureLocation(start - length, start)
             strand = -1
-        super().__init__(self, location, strand=strand)
+        super().__init__(location, strand=strand)
 
     def __len__(self) -> int:
         return len(self.sequence)
