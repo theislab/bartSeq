@@ -11,12 +11,14 @@ def calculate_alignment(sequences, i):
     print("seq", i)
     seq1 = sequences[i]
     scores = [0] * len(sequences)
-    max_penalty = (len(sequences) * len(sequences))/2 - len(sequences)
+    max_penalty = (len(sequences) * len(sequences)) / 2 - len(sequences)
     for j, seq2 in enumerate(sequences):
         if j <= i:
             continue
         score = pairwise2.align.globalxx(seq1, seq2)[0][2]
-        score_revcomp = pairwise2.align.globalxx(str(Seq(seq1).reverse_complement()), seq2)[0][2]
+        score_revcomp = pairwise2.align.globalxx(
+            str(Seq(seq1).reverse_complement()), seq2
+        )[0][2]
         max_score = max(score, score_revcomp)
         if max_score < 7:
             scores[j] = 7 - max_score
@@ -96,9 +98,9 @@ def simulated_annealing(m):
 
         i += 1
 
-    outfile = open('scores_new.txt', 'w')
+    outfile = open("scores_new.txt", "w")
     for score in scores:
-        outfile.write(str(score) + '\n')
+        outfile.write(str(score) + "\n")
     outfile.close()
 
     return v
@@ -107,8 +109,11 @@ def simulated_annealing(m):
 class SequenceFilters:
     @staticmethod
     def gc_content(sequences, num_gc):
-        return [act_seq for act_seq in sequences if
-                len(re.findall(r"[cg]", act_seq, flags=re.IGNORECASE)) == num_gc]
+        return [
+            act_seq
+            for act_seq in sequences
+            if len(re.findall(r"[cg]", act_seq, flags=re.IGNORECASE)) == num_gc
+        ]
 
     @staticmethod
     def repeats(sequences, num_repeats, length_repeats):
@@ -117,7 +122,9 @@ class SequenceFilters:
         for seq in sequences:
             has_repeat = False
             for l in range(length_repeats):
-                m = re.search(rf"(([gatc]{{{l+1}}})\2{{{num_repeats}}})", seq, flags=re.IGNORECASE)
+                m = re.search(
+                    rf"(([gatc]{{{l+1}}})\2{{{num_repeats}}})", seq, flags=re.IGNORECASE
+                )
                 if m is not None:
                     has_repeat = True
             if has_repeat is not True:
@@ -133,7 +140,7 @@ class SequenceFilters:
         pool = Pool(processes=5)
         results = []
         for i, seq1 in enumerate(sequences):
-            results.append(pool.apply_async(calculate_alignment, args=(sequences, i,)))
+            results.append(pool.apply_async(calculate_alignment, args=(sequences, i)))
 
         pool.close()
         pool.join()
@@ -145,26 +152,25 @@ class SequenceFilters:
             for j in range(i + 1, len(score_matrix)):
                 score_matrix[j][i] = score_matrix[i][j]
 
-        with open('score_matrix_new.txt', 'w') as best:
+        with open("score_matrix_new.txt", "w") as best:
             for i in range(0, len(sequences)):
-                best.write(sequences[i] + '\t')
-            best.write('\n')
+                best.write(sequences[i] + "\t")
+            best.write("\n")
             for i in range(0, len(sequences)):
-                best.write(sequences[i] + '\t')
+                best.write(sequences[i] + "\t")
                 for j in range(0, len(sequences)):
-                    best.write(str(score_matrix[i][j]) + '\t')
-                best.write('\n')
+                    best.write(str(score_matrix[i][j]) + "\t")
+                best.write("\n")
 
         v = simulated_annealing(score_matrix)
 
-        with open('best_new.txt', 'w') as best:
+        with open("best_new.txt", "w") as best:
             for i in v:
-                best.write(sequences[i] + '\t')
-            best.write('\n')
+                best.write(sequences[i] + "\t")
+            best.write("\n")
             for i in v:
-                best.write(sequences[i] + '\t')
+                best.write(sequences[i] + "\t")
                 for j in v:
                     ind_i = sorted([i, j])
-                    best.write(str(score_matrix[ind_i[0]][ind_i[1]]) + '\t')
-                best.write('\n')
-
+                    best.write(str(score_matrix[ind_i[0]][ind_i[1]]) + "\t")
+                best.write("\n")

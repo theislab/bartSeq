@@ -35,20 +35,41 @@ class P3Seq:
                     ampl.interval = interval
 
                     input_string = ""
-                    input_string += "SEQUENCE_ID=" + record.id + "_" + spacing + "_" + interval + "\n"
+                    input_string += (
+                        "SEQUENCE_ID="
+                        + record.id
+                        + "_"
+                        + spacing
+                        + "_"
+                        + interval
+                        + "\n"
+                    )
                     input_string += "PRIMER_TASK=pick_sequencing_primers\n"
                     input_string += "PRIMER_SEQUENCING_SPACING=" + spacing + "\n"
                     input_string += "PRIMER_SEQUENCING_INTERVAL=" + interval + "\n"
 
                     if sequence.find("<") >= 0 and sequence.find(">") >= 0:
                         input_string += "SEQUENCE_EXCLUDED_REGION="
-                        spl_sequence = re.split(r"[<>]", sequence.replace("[", "").replace("]", ""))
-                        for i in range(0, len(spl_sequence)-1, 2):
+                        spl_sequence = re.split(
+                            r"[<>]", sequence.replace("[", "").replace("]", "")
+                        )
+                        for i in range(0, len(spl_sequence) - 1, 2):
                             start = 0
-                            for j in range(0, i+1):
+                            for j in range(0, i + 1):
                                 start += len(spl_sequence[j])
-                            input_string += str(start+1) + "," + str(len(spl_sequence[i+1])) + " "
-                            ampl.add_feature(ExcludedRegion(FeatureLocation(start+1, start + len(spl_sequence[i+1]))))
+                            input_string += (
+                                str(start + 1)
+                                + ","
+                                + str(len(spl_sequence[i + 1]))
+                                + " "
+                            )
+                            ampl.add_feature(
+                                ExcludedRegion(
+                                    FeatureLocation(
+                                        start + 1, start + len(spl_sequence[i + 1])
+                                    )
+                                )
+                            )
                         input_string += "\n"
 
                     sequence = sequence.replace("<", "")
@@ -57,12 +78,23 @@ class P3Seq:
                     if sequence.find("[") >= 0 and sequence.find("]") >= 0:
                         input_string += "SEQUENCE_TARGET="
                         spl_sequence = re.split(r"[\[\]]", sequence)
-                        for i in range(0, len(spl_sequence)-1, 2):
+                        for i in range(0, len(spl_sequence) - 1, 2):
                             start = 0
-                            for j in range(0, i+1):
+                            for j in range(0, i + 1):
                                 start += len(spl_sequence[j])
-                            input_string += str(start+1) + "," + str(len(spl_sequence[i+1])) + " "
-                            ampl.add_feature(TargetRegion(FeatureLocation(start+1, start + len(spl_sequence[i+1]))))
+                            input_string += (
+                                str(start + 1)
+                                + ","
+                                + str(len(spl_sequence[i + 1]))
+                                + " "
+                            )
+                            ampl.add_feature(
+                                TargetRegion(
+                                    FeatureLocation(
+                                        start + 1, start + len(spl_sequence[i + 1])
+                                    )
+                                )
+                            )
                         input_string += "\n"
 
                     sequence = sequence.replace("]", "")
@@ -74,31 +106,50 @@ class P3Seq:
                     input_string += "P3_FILE_FLAG=0\n"
                     input_string += "PRIMER_EXPLAIN_FLAG=1\n"
                     input_string += "PRIMER_NUM_RETURN=20\n"
-                    input_string += "PRIMER_THERMODYNAMIC_PARAMETERS_PATH=" + self.config.p3_thermo_path + "\n="
+                    input_string += (
+                        "PRIMER_THERMODYNAMIC_PARAMETERS_PATH="
+                        + self.config.p3_thermo_path
+                        + "\n="
+                    )
 
-                    cmd = self.config.p3_path + " -p3_settings_file=" + self.config.p3_config_path
+                    cmd = (
+                        self.config.p3_path
+                        + " -p3_settings_file="
+                        + self.config.p3_config_path
+                    )
                     args = shlex.split(cmd)
-                    p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+                    p = subprocess.Popen(
+                        args, stdin=subprocess.PIPE, stdout=subprocess.PIPE
+                    )
                     p3_output = p.communicate(input_string)[0].strip()
 
-                    primer_set_fwd = PrimerSet(record.id + "_" + spacing + "_" + interval + "_left")
-                    primer_set_rev = PrimerSet(record.id + "_" + spacing + "_" + interval + "_right")
+                    primer_set_fwd = PrimerSet(
+                        record.id + "_" + spacing + "_" + interval + "_left"
+                    )
+                    primer_set_rev = PrimerSet(
+                        record.id + "_" + spacing + "_" + interval + "_right"
+                    )
 
-                    m = re.search(r'(?<=PRIMER_ERROR=).+', p3_output)
+                    m = re.search(r"(?<=PRIMER_ERROR=).+", p3_output)
                     ampl.error = ""
                     ampl.warning = ""
                     if m is not None:
                         ampl.error = m.group(0)
                     elif p3_output != "":
-                        mw = re.search(r'(?<=PRIMER_WARNING=).+', p3_output)
+                        mw = re.search(r"(?<=PRIMER_WARNING=).+", p3_output)
                         if mw is not None:
                             ampl.warning += mw.group(0)
-                        P3Parser.parse_p3seq_information(primer_set_fwd, primer_set_rev, p3_output, ampl, self.config.p3_config_path)
+                        P3Parser.parse_p3seq_information(
+                            primer_set_fwd,
+                            primer_set_rev,
+                            p3_output,
+                            ampl,
+                            self.config.p3_config_path,
+                        )
 
                     ampl.primer_set_fwd = primer_set_fwd
                     ampl.primer_set_rev = primer_set_rev
-                    
+
                     out_seq.amplicons.append(ampl)
             output[record.id] = out_seq
         return output
-

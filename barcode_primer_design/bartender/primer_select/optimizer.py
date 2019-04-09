@@ -13,7 +13,9 @@ class Optimizer:
         sum_mfes = 0
         for seq1, pair1 in enumerate(selected_pairs):
             for seq2, pair2 in enumerate(selected_pairs):
-                sum_mfes += self.sequence_set[seq1].mfes[selected_amplicons[seq1]][pair1][seq2][selected_amplicons[seq2]][pair2]
+                sum_mfes += self.sequence_set[seq1].mfes[selected_amplicons[seq1]][
+                    pair1
+                ][seq2][selected_amplicons[seq2]][pair2]
         return sum_mfes / 2
 
     def optimize(self):
@@ -35,13 +37,13 @@ class Optimizer:
 
         w = []
         for i, gene in enumerate(self.sequence_set):
-            w.append(random.randint(0, amplicon_lengths[i]-1))
+            w.append(random.randint(0, amplicon_lengths[i] - 1))
 
         v = []
         for i, seq in enumerate(self.sequence_set):
-            v.append(random.randint(0, set_lengths[i][w[i]]-1))
+            v.append(random.randint(0, set_lengths[i][w[i]] - 1))
 
-        temp_steps = math.floor(max_ind/(max_temperature+1))
+        temp_steps = math.floor(max_ind / (max_temperature + 1))
 
         no_change = 0
 
@@ -56,14 +58,18 @@ class Optimizer:
             if i % temp_steps == 0 and act_temperature != 0:
                 act_temperature += -1
 
-            j = random.randint(0, len(v)-1)
+            j = random.randint(0, len(v) - 1)
             changed = False
 
             # in 20% of the cases change the amplicon
             if random.random() < 0.2:
-                for k in random.sample(range(0, amplicon_lengths[j]), amplicon_lengths[j]):
+                for k in random.sample(
+                    range(0, amplicon_lengths[j]), amplicon_lengths[j]
+                ):
                     v_temp = copy.copy(v)
-                    for l in random.sample(range(0, set_lengths[j][k]), set_lengths[j][k]):
+                    for l in random.sample(
+                        range(0, set_lengths[j][k]), set_lengths[j][k]
+                    ):
                         v_temp[j] = l
                         w_temp = copy.copy(w)
                         w_temp[j] = k
@@ -74,14 +80,18 @@ class Optimizer:
                         if new_score <= old_score:
                             w[j] = k
                             v[j] = l
-                        elif act_temperature > 0 and math.exp((old_score-new_score)/act_temperature) > random.uniform(0, 1):
+                        elif act_temperature > 0 and math.exp(
+                            (old_score - new_score) / act_temperature
+                        ) > random.uniform(0, 1):
                             w[j] = k
                             v[j] = l
 
                         if new_score < old_score:
                             changed = True
             else:
-                for k in random.sample(range(0, set_lengths[j][w[j]]), set_lengths[j][w[j]]):
+                for k in random.sample(
+                    range(0, set_lengths[j][w[j]]), set_lengths[j][w[j]]
+                ):
                     v_temp = copy.copy(v)
                     v_temp[j] = k
 
@@ -90,7 +100,9 @@ class Optimizer:
 
                     if new_score <= old_score:
                         v[j] = k
-                    elif act_temperature > 0 and math.exp((old_score-new_score)/act_temperature) > random.uniform(0, 1):
+                    elif act_temperature > 0 and math.exp(
+                        (old_score - new_score) / act_temperature
+                    ) > random.uniform(0, 1):
                         v[j] = k
 
                     if new_score < old_score:

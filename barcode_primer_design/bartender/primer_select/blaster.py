@@ -9,10 +9,16 @@ class Blaster:
         self.config = config
 
     def run_task(self, input):
-        cmd = self.config.blast_path + " -p blastn -r 1 -G -5 -E -5 -m 8 -d " + os.path.join(self.config.blast_dbpath, self.config.blast_dbname)
+        cmd = (
+            self.config.blast_path
+            + " -p blastn -r 1 -G -5 -E -5 -m 8 -d "
+            + os.path.join(self.config.blast_dbpath, self.config.blast_dbname)
+        )
         print(cmd)
         print(f"BLASTing primer {str(input).split('_')[0]}")
-        p = subprocess.Popen(shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        p = subprocess.Popen(
+            shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE
+        )
         r_string = p.communicate(str(input))[0].strip()
         return r_string
 
@@ -22,8 +28,22 @@ class Blaster:
             for amplicon in gene.amplicons:
                 blast_string = ""
                 for pair in amplicon.primer_set.set:
-                    blast_string += ">" + pair.name + "_fwd\n" + linkers[0] + pair.fwd.sequence + "\n\n"
-                    blast_string += ">" + pair.name + "_rev\n" + linkers[1] + pair.rev.sequence + "\n\n"
+                    blast_string += (
+                        ">"
+                        + pair.name
+                        + "_fwd\n"
+                        + linkers[0]
+                        + pair.fwd.sequence
+                        + "\n\n"
+                    )
+                    blast_string += (
+                        ">"
+                        + pair.name
+                        + "_rev\n"
+                        + linkers[1]
+                        + pair.rev.sequence
+                        + "\n\n"
+                    )
                 blast_strings.append(blast_string)
 
         pool = ThreadPool(self.config.max_threads)
@@ -58,19 +78,29 @@ class Blaster:
                         pair.rev.blast_hits = blast_hits.count(pair.name + "_rev")
 
                 amplicon.primer_set.set = [
-                    pair for pair in amplicon.primer_set.set
+                    pair
+                    for pair in amplicon.primer_set.set
                     if pair.fwd.blast_hits <= self.config.blast_max_hits
                     and pair.rev.blast_hits <= self.config.blast_max_hits
                 ]
                 print(gene.name, len(amplicon.primer_set.set))
 
                 if len(amplicon.primer_set.set) == 0:
-                    print(f"WARNING: At least one amplicon was removed from gene {gene.name} due to too many BLAST hits.\n")
+                    print(
+                        f"WARNING: At least one amplicon was removed from gene {gene.name} due to too many BLAST hits.\n"
+                    )
 
                 index += 1
 
-            gene.amplicons = [amplicon for amplicon in gene.amplicons if len(amplicon.primer_set.set) != 0]
+            gene.amplicons = [
+                amplicon
+                for amplicon in gene.amplicons
+                if len(amplicon.primer_set.set) != 0
+            ]
             if len(gene.amplicons) == 0:
                 print("Remove", gene.name)
-                raise Exception("No primers left for " + gene.name + ". Consider less restrictive BLAST settings.")
-
+                raise Exception(
+                    "No primers left for "
+                    + gene.name
+                    + ". Consider less restrictive BLAST settings."
+                )

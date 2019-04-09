@@ -18,9 +18,21 @@ class PrimerSelect:
                 amplicon = w[j]
                 pset = seq.amplicons[amplicon].primer_set
                 pair = pset.set[v[j]]
-                output_string += pset.name + " (sequence " + str(amplicon+1) + ")" + "\tfwd: " + pair.fwd.sequence.upper() + "\trev: " \
-                                 + pair.rev.sequence.upper() + "\tBLAST hits: " \
-                                 + str(pair.fwd.blast_hits) + " / " + str(pair.rev.blast_hits) + "\n"
+                output_string += (
+                    pset.name
+                    + " (sequence "
+                    + str(amplicon + 1)
+                    + ")"
+                    + "\tfwd: "
+                    + pair.fwd.sequence.upper()
+                    + "\trev: "
+                    + pair.rev.sequence.upper()
+                    + "\tBLAST hits: "
+                    + str(pair.fwd.blast_hits)
+                    + " / "
+                    + str(pair.rev.blast_hits)
+                    + "\n"
+                )
             output_string += "------------------\n"
         return output_string
 

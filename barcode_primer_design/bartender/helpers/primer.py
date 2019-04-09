@@ -44,7 +44,14 @@ class Primer(SeqFeature):
     """
     start is a position in python style, i.e. as an index.
     """
-    def __init__(self, sequence: str, start: int, length: Optional[int] = None, reverse: bool = False):
+
+    def __init__(
+        self,
+        sequence: str,
+        start: int,
+        length: Optional[int] = None,
+        reverse: bool = False,
+    ):
         self.sequence = sequence
         if length is None:
             length = len(sequence)
