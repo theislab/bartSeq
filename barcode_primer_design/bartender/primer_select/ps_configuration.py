@@ -1,8 +1,10 @@
 from configparser import RawConfigParser
-from typing import NamedTuple, TextIO
+from dataclasses import dataclass
+from typing import TextIO
 
 
-class PsConfiguration(NamedTuple):
+@dataclass
+class PsConfiguration:
     max_threads: int
     p3_path: str
     p3_config_path: str
