@@ -1,11 +1,9 @@
 {% extends "base.html" %}
 {% block title %}PrimerSelect{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>PrimerSelect</h1>
-    <p>PrimerSelect predicts optimal primer sets for Bart-Seq technology. Paste target genes into Input Sequence Form in order to get primer pair predictions.
-    Computation might take a short moment, while page is not responsive.</p>
-</div>
+<h1>PrimerSelect</h1>
+<p>PrimerSelect predicts optimal primer sets for Bart-Seq technology. Paste target genes into Input Sequence Form in order to get primer pair predictions.
+Computation might take a short moment, while page is not responsive.</p>
 
 {% if error %}
 <div class="alert alert-danger" role="alert">
@@ -15,7 +13,7 @@
 
 <form class="form-horizontal" method="POST" action="/primerselect" enctype=multipart/form-data>
     {{ form.hidden_tag() }}
-    <div class="form-group">
+    <div class="form-group row">
         {{ form.input.label }}
         {{ form.input(rows=15) }}
     </div>
@@ -30,7 +28,7 @@
         </div>
         {% endif %}
     </div>
-    <div class="form-group">
+    <div class="form-group row">
         {{ form.predefined.label }}
         {{ form.predefined(rows=8) }}
     </div>
@@ -45,11 +43,11 @@
         </div>
         {% endif %}
     </div>
-    <div class="form-group">
+    <div class="form-group row">
         {{ form.blast_db.label }}
-        {{ form.blast_db(class_='col-sm-4') }}
+        {{ form.blast_db(class_='col-sm-4 form-control') }}
         {{ form.blast_hits.label }}
-        {{ form.blast_hits(class_='col-sm-4') }}
+        {{ form.blast_hits(class_='col-sm-4 form-control') }}
     </div>
     <div class="row">
         {% if form.blast_db.errors or form.blast_hits.errors %}
@@ -65,11 +63,11 @@
         </div>
         {% endif %}
     </div>
-    <div class="form-group">
+    <div class="form-group row">
         {{ form.left_linker.label }}
-        {{ form.left_linker(class_='col-sm-4') }}
+        {{ form.left_linker(class_='col-sm-4 form-control') }}
         {{ form.right_linker.label }}
-        {{ form.right_linker(class_='col-sm-4') }}
+        {{ form.right_linker(class_='col-sm-4 form-control') }}
     </div>
     <div class="row">
         {% if form.left_linker.errors or form.right_linker.errors %}
@@ -87,7 +85,7 @@
         </div>
         {% endif %}
     </div>
-    <div class="form-group">
+    <div class="form-group row">
         {{ form.configuration.label }}
         {{ form.configuration() }}
         {% if form.configuration.errors %}

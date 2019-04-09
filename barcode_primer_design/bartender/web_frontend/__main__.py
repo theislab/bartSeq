@@ -36,8 +36,8 @@ class HorizontalForm(FlaskForm):
         for field in self:
             if not field.render_kw:
                 field.render_kw = {}
-            field.render_kw["class_"] = "col-sm-10"
-            field.label = field.label(class_="col-sm-2")
+            field.render_kw["class_"] = "col-sm-10 form-control"
+            field.label = field.label(class_="col-sm-2 col-form-label")
 
 
 class PrimerSelectForm(HorizontalForm):

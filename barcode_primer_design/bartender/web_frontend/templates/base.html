@@ -3,50 +3,50 @@
 <head>
     <title>{% block title %}{% endblock %} - Bartender software suite</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link rel=stylesheet href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin=anonymous></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin=anonymous></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-    <link href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}" rel="stylesheet">
+    <link rel=stylesheet href="{{ url_for('static', filename='css/bootstrap-theme.min.css') }}">
 
     <style>
-    body { /* fixed navbar */
+    /* fixed navbar */
+    body {
         padding-top: 70px;
+    }
+    /* override slimming to match other fields */
+    select.form-control:not([size]):not([multiple]) {
+        height: auto;
     }
     </style>
 </head>
 <body role="document">
 
-<nav class='navbar navbar-inverse navbar-fixed-top' role='navigation'>
-    <div class='container'>
-        <div class='navbar-header'>
-            <button
-                type='button'
-                class='navbar-toggle collapsed'
-                data-toggle='collapse'
-                data-target='#navbar'
-                aria-expanded='false'
-                aria-controls='navbar'
-            >
-                <span class='sr-only'>Toggle navigation</span>
-                <span class='icon-bar'></span>
-                <span class='icon-bar'></span>
-                <span class='icon-bar'></span>
-            </button>
-            <a class='navbar-brand' href='/'>Home</a>
-        </div>
-        <div id='navbar' class='navbar-collapse collapse'>
-            <ul class='nav navbar-nav'>
-                {% for subpage, title in [('primerselect', 'PrimerSelect'), ('about_page', 'About')] %}
-                <li class='nav-item {{ 'active' if request.path == url_for(subpage) }}'>
-                    <a href='{{ url_for(subpage) }}'>{{ title }}</a>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
+<nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" role=navigation>
+    <a class=navbar-brand href="/">Home</a>
+    <button
+        type=button
+        class=navbar-toggler
+        data-toggle=collapse
+        data-target="#navbar"
+        aria-expanded=false
+        aria-controls=navbar
+        aria-label="Toggle navigation"
+    >
+        <span class=navbar-toggler-icon></span>
+    </button>
+    <div id=navbar class='collapse navbar-collapse'>
+        <ul class=navbar-nav>
+            {% for subpage, title in [('primerselect', 'PrimerSelect'), ('about_page', 'About')] %}
+            <li class="nav-item {{ 'active' if request.path == url_for(subpage) }}">
+                <a class=nav-link href="{{ url_for(subpage) }}">{{ title }}</a>
+            </li>
+            {% endfor %}
+        </ul>
     </div>
 </nav>
 
-<main class="container theme-showcase">
+<main class=container>
 {% block content %}{% endblock %}
 </main>
 
