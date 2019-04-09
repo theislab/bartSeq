@@ -3,10 +3,10 @@ import os
 from pathlib import Path
 
 from flask import Flask, Markup, render_template, make_response, url_for
-from flask_wtf import Form
+from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from werkzeug.utils import secure_filename, redirect
-from wtforms import StringField, validators, TextAreaField, SelectField
+from wtforms import StringField, validators, TextAreaField, SelectField, Field
 
 from ..p3seq.p3seq import P3Seq
 from ..primer_select.ps_configuration import PsConfigurationHandler
@@ -29,11 +29,18 @@ with (PATH_PREFIX / "config.cfg").open("r") as f:
     predefined_config = f.read()
 
 
-class MyForm(Form):
-    name = StringField("name", validators=[validators.Length(min=4, max=25)])
+class HorizontalForm(FlaskForm):
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        field: Field
+        for field in self:
+            if not field.render_kw:
+                field.render_kw = {}
+            field.render_kw["class_"] = "col-sm-10"
+            field.label = field.label(class_="col-sm-2")
 
 
-class PrimerSelectForm(Form):
+class PrimerSelectForm(HorizontalForm):
     input = TextAreaField("Input Sequences", validators=[validators.DataRequired()])
     predefined = TextAreaField("Predefined primers")
     configuration = FileField(
@@ -52,11 +59,11 @@ class PrimerSelectForm(Form):
             ("mrna.fa", "GenBank mRNA"),
         ],
     )
-    left_linker = StringField("Left", default="ATGCGCATTC")
-    right_linker = StringField("Right", default="AGCGTAACCT")
+    left_linker = StringField("Left Linker", default="ATGCGCATTC")
+    right_linker = StringField("Right Linker", default="AGCGTAACCT")
 
 
-class P3seqForm(Form):
+class P3seqForm(HorizontalForm):
     input = TextAreaField("Input Sequences", validators=[validators.DataRequired()])
     spacing = StringField(
         "Range spacing", validators=[validators.DataRequired()], default="500"

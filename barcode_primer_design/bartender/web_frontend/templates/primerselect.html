@@ -13,105 +13,85 @@
 </div>
 {% endif %}
 
-<form method="POST" action="/primerselect" enctype=multipart/form-data>
+<form class="form-horizontal" method="POST" action="/primerselect" enctype=multipart/form-data>
     {{ form.hidden_tag() }}
-    <table>
-        <tr>
-            <td>{{ form.input.label }}</td>
-            <td style="padding: 15px;">
-                {{ form.input(rows=15, cols=100) }}
-                {% if form.input.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <ul class="errors">
-                        {% for element_error in form.input.errors %}
-                        <li>{{ element_error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ form.predefined.label }}</td>
-            <td style="padding: 15px;">
-                {{ form.predefined(rows=8, cols=100) }}
-                {% if form.predefined.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <ul class="errors">
-                        {% for element_error in form.predefined.errors %}
-                        <li>{{ element_error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ form.blast_db.label }}</td>
-            <td style="padding: 15px;">
-                {{ form.blast_db() }}
-                {% if form.blast_db.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <ul class="errors">
-                        {% for element_error in form.blast_db.errors %}
-                        <li>{{ element_error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ form.blast_hits.label }}</td>
-            <td style="padding: 15px;">
-                {{ form.blast_hits(size=3) }}
-                {% if form.blast_hits.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <ul class="errors">
-                        {% for element_error in form.blast_hits.errors %}
-                        <li>{{ element_error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td><b>Linker sequences</b></td>
-            <td style="padding: 15px;">
-                Left: {{ form.left_linker(size=12) }} Right: {{ form.right_linker(size=12) }}
-                {% if form.left_linker.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <ul class="errors">
-                        {% for element_error in form.left_linker.errors %}
-                        <li>{{ element_error }}</li>
-                        {% endfor %}
-                    </ul>
-                    <ul class="errors">
-                        {% for element_error in form.right_linker.errors %}
-                        <li>{{ element_error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </td>
-        </tr>
-        <tr>
-            <td>{{ form.configuration.label }}</td>
-            <td style="padding: 15px;">
-                {{ form.configuration() }}
-                {% if form.configuration.errors %}
-                <div class="alert alert-danger" role="alert">
-                    <ul class="errors">
-                        {% for element_error in form.configuration.errors %}
-                        <li>{{ element_error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </td>
-        </tr>
-    </table>
+    <div class="form-group">
+        {{ form.input.label }}
+        {{ form.input(rows=15) }}
+        {% if form.input.errors %}
+        <div class="alert alert-danger" role="alert">
+            <ul class="errors">
+                {% for element_error in form.input.errors %}
+                <li>{{ element_error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.predefined.label }}
+        {{ form.predefined(rows=8) }}
+        {% if form.predefined.errors %}
+        <div class="alert alert-danger" role="alert">
+            <ul class="errors">
+                {% for element_error in form.predefined.errors %}
+                <li>{{ element_error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.blast_db.label }}
+        {{ form.blast_db(class_='col-sm-4') }}
+        {{ form.blast_hits.label }}
+        {{ form.blast_hits(class_='col-sm-4') }}
+        {% if form.blast_hits.errors %}
+        <div class="alert alert-danger" role="alert">
+            <ul class="errors">
+                {% for element_error in form.blast_db.errors %}
+                <li>{{ element_error }}</li>
+                {% endfor %}
+                {% for element_error in form.blast_hits.errors %}
+                <li>{{ element_error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.left_linker.label }}
+        {{ form.left_linker(class_='col-sm-4') }}
+        {{ form.right_linker.label }}
+        {{ form.right_linker(class_='col-sm-4') }}
+        {% if form.left_linker.errors %}
+        <div class="alert alert-danger" role="alert">
+            <ul class="errors">
+                {% for element_error in form.left_linker.errors %}
+                <li>{{ element_error }}</li>
+                {% endfor %}
+            </ul>
+            <ul class="errors">
+                {% for element_error in form.right_linker.errors %}
+                <li>{{ element_error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.configuration.label }}
+        {{ form.configuration() }}
+        {% if form.configuration.errors %}
+        <div class="alert alert-danger" role="alert">
+            <ul class="errors">
+                {% for element_error in form.configuration.errors %}
+                <li>{{ element_error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
     <button type="submit" id="startButton" class="btn btn-primary">
         Start analysis
     </button>
