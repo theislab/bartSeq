@@ -1,7 +1,3 @@
-import ConfigParser
-import os.path
-
-
 class Configuration:
     pass
 

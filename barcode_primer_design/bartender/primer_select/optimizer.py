@@ -1,11 +1,10 @@
-from __future__ import print_function
-import random
-import math
 import copy
-import shelve
+import math
+import random
+from typing import List
+
 
 class Optimizer:
-
     def __init__(self, config, sequence_set):
         self.config = config
         self.sequence_set = sequence_set
@@ -17,13 +16,12 @@ class Optimizer:
                 sum_mfes += self.sequence_set[seq1].mfes[selected_amplicons[seq1]][pair1][seq2][selected_amplicons[seq2]][pair2]
         return sum_mfes / 2
 
-    def optimize(self, debug=False):
-
+    def optimize(self):
         max_ind = self.config.opt_steps
         max_temperature = min(self.config.opt_max_temp, self.config.opt_steps)
 
-        amplicon_lengths = []
-        set_lengths = []
+        amplicon_lengths: List[int] = []
+        set_lengths: List[List[int]] = []
 
         for i, gene in enumerate(self.sequence_set):
             aset = gene.amplicons
@@ -32,11 +30,8 @@ class Optimizer:
             for amplicon in aset:
                 set_lengths[i].append(len(amplicon.primer_set))
 
-
         combinations = []
         act_temperature = max_temperature
-
-        mfe_sum = []
 
         w = []
         for i, gene in enumerate(self.sequence_set):
@@ -46,32 +41,29 @@ class Optimizer:
         for i, seq in enumerate(self.sequence_set):
             v.append(random.randint(0, set_lengths[i][w[i]]-1))
 
-
         temp_steps = math.floor(max_ind/(max_temperature+1))
 
-        no_change=0
+        no_change = 0
 
         i = 0
         while no_change < 1500:
-
             # if i % math.floor(max_ind/10) == 0:
             #     print ((i/math.floor(max_ind))*100,"%")
 
             if i % 1000 == 0:
-                print (no_change," ", act_temperature, " ",self.f(v, w))
+                print(no_change, act_temperature, self.f(v, w))
 
             if i % temp_steps == 0 and act_temperature != 0:
                 act_temperature += -1
-
 
             j = random.randint(0, len(v)-1)
             changed = False
 
             # in 20% of the cases change the amplicon
             if random.random() < 0.2:
-                for k in random.sample(xrange(0, amplicon_lengths[j]), amplicon_lengths[j]):
+                for k in random.sample(range(0, amplicon_lengths[j]), amplicon_lengths[j]):
                     v_temp = copy.copy(v)
-                    for l in random.sample(xrange(0, set_lengths[j][k]), set_lengths[j][k]):
+                    for l in random.sample(range(0, set_lengths[j][k]), set_lengths[j][k]):
                         v_temp[j] = l
                         w_temp = copy.copy(w)
                         w_temp[j] = k
@@ -88,9 +80,8 @@ class Optimizer:
 
                         if new_score < old_score:
                             changed = True
-
             else:
-                for k in random.sample(xrange(0, set_lengths[j][w[j]]), set_lengths[j][w[j]]):
+                for k in random.sample(range(0, set_lengths[j][w[j]]), set_lengths[j][w[j]]):
                     v_temp = copy.copy(v)
                     v_temp[j] = k
 

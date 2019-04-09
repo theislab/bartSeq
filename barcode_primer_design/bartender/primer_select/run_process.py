@@ -1,13 +1,10 @@
-from __future__ import print_function
-from primer_select.blaster import Blaster
-from primer_select.optimizer import Optimizer
-from primer_select.primer_predictor import PrimerPredictor
-from primer_select.rnacofolder import Cofolder
-from operator import itemgetter
-from helpers.print_primers import PrimerPrinter
+from .blaster import Blaster
+from .optimizer import Optimizer
+from .primer_predictor import PrimerPredictor
+from .rnacofolder import Cofolder
+
 
 class PrimerSelect:
-
     @staticmethod
     def output(arrangements, sequence_set):
         output_string = ""
@@ -27,15 +24,13 @@ class PrimerSelect:
             output_string += "------------------\n"
         return output_string
 
-
     @staticmethod
-    def optimize(config, sequence_set, linkers, debug=False):
+    def optimize(config, sequence_set, linkers):
         cofolder = Cofolder(config)
         cofolder.cofold(sequence_set, linkers)
         optimizer = Optimizer(config, sequence_set)
-        opt_result = optimizer.optimize(debug=debug)
+        opt_result = optimizer.optimize()
         return opt_result
-
 
     @staticmethod
     def predict_primerset(config, input_handle, predefined_handle, linkers):

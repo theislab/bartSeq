@@ -1,45 +1,50 @@
+from typing import Optional, List
+
 from Bio.SeqFeature import SeqFeature, FeatureLocation
 
-class Gene:
-    def __init__(self, name):
-        self.name = name
-        self.amplicons = []
-
-    def append(self, amplicon):
-        self.amplicons.append(amplicon)
-
-    def remove(self, amplicon):
-        self.amplicons.remove(amplicon)
-
-    def __len__(self):
-        return len(self.amplicons)
 
 class Amplicon:
-    def __init__(self, sequence):
+    def __init__(self, sequence: str):
         self.sequence = sequence
-        self.features = []
+        self.features: List[SeqFeature] = []
 
-    def add_feature(self, feature):
+    def add_feature(self, feature: SeqFeature):
         self.features.append(feature)
 
     def __len__(self):
         return len(self.sequence)
 
 
+class Gene:
+    def __init__(self, name: str):
+        self.name = name
+        self.amplicons: List[Amplicon] = []
+
+    def append(self, amplicon: Amplicon):
+        self.amplicons.append(amplicon)
+
+    def remove(self, amplicon: Amplicon):
+        self.amplicons.remove(amplicon)
+
+    def __len__(self) -> int:
+        return len(self.amplicons)
+
+
 class ExcludedRegion(SeqFeature):
-    def __init__(self, location):
-        SeqFeature.__init__(self, location, None)
+    def __init__(self, location: FeatureLocation):
+        super().__init__(self, location, None)
+
 
 class TargetRegion(SeqFeature):
-    def __init__(self, location):
-        SeqFeature.__init__(self, location, None)
+    def __init__(self, location: FeatureLocation):
+        super().__init__(self, location, None)
 
 
 class Primer(SeqFeature):
     """
     start is a position in python style, i.e. as an index.
     """
-    def __init__(self, sequence, start, length=None, reverse=False):
+    def __init__(self, sequence: str, start: int, length: Optional[int] = None, reverse: bool = False):
         self.sequence = sequence
         if length is None:
             length = len(sequence)
@@ -51,19 +56,19 @@ class Primer(SeqFeature):
             # The same applies here: We are handling boundaries
             location = FeatureLocation(start - length, start)
             strand = -1
-        SeqFeature.__init__(self, location, strand=strand)
+        super().__init__(self, location, strand=strand)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.sequence)
 
+
 class PrimerSet:
-
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
-        self.set = []
+        self.set: List[Primer] = []
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.set)
 
-    def append(self, primer):
+    def append(self, primer: Primer):
         self.set.append(primer)

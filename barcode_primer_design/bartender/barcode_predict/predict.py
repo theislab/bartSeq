@@ -1,8 +1,7 @@
-from __future__ import print_function
 import itertools
 from multiprocessing import freeze_support
 
-from barcode_predict.filters import *
+from .filters import SequenceFilters
 
 
 def main():
@@ -10,11 +9,11 @@ def main():
     sequences = []
     for it in itertools.product("ACTG", repeat=seq_length):
         sequences.append("".join(it))
-    print("Number of initial sequences: ", len(sequences))
+    print("Number of initial sequences:", len(sequences))
     sequences = SequenceFilters.gc_content(sequences, 5)
-    print("Number of GC filtered sequences: ", len(sequences))
+    print("Number of GC filtered sequences:", len(sequences))
     sequences = SequenceFilters.repeats(sequences, 2, 3)
-    print("Number of repeat filtered sequences: ", len(sequences))
+    print("Number of repeat filtered sequences:", len(sequences))
     SequenceFilters.similarity(sequences)
 
     # linker_sequences = []

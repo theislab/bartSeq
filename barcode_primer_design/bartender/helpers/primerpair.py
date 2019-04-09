@@ -1,8 +1,4 @@
-from __future__ import print_function
-import ConfigParser
-import StringIO
-import re
-from helpers.primer import Primer
+from .primer import Primer
 
 
 class PrimerPairSet:
@@ -18,14 +14,16 @@ class PrimerPairSet:
 
 
 class PrimerPair:
-    def __init__(self, fwd, rev, name, predefined=False):
+    def __init__(self, fwd: Primer, rev: Primer, name: str, predefined: bool = False):
         self.fwd = fwd
         self.rev = rev
         self.name = name
         self.predefined = predefined
 
-    def fwd_seq(self):
+    @property
+    def fwd_seq(self) -> str:
         return self.fwd.sequence
 
-    def rev_seq(self):
+    @property
+    def rev_seq(self) -> str:
         return self.rev.sequence

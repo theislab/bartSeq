@@ -1,14 +1,14 @@
-from configuration import *
+from configparser import RawConfigParser
+
+from ..configuration import Configuration, ConfigurationHandler
 
 
 class PsConfigurationHandler(ConfigurationHandler):
-
     @staticmethod
     def write_standard_config(path):  # Write the standard settings file
         """ Write the standard settings file
-
         """
-        config = ConfigParser.RawConfigParser()
+        config = RawConfigParser()
         config.set('DEFAULT', 'threads', '1')
 
         config.add_section('Primer3')
@@ -35,11 +35,9 @@ class PsConfigurationHandler(ConfigurationHandler):
     @staticmethod
     def read_config(handle):  # Read the settings file
         """ Read the settings file
-
         """
-
-        config = ConfigParser.RawConfigParser()
-        config.readfp(handle)
+        config = RawConfigParser()
+        config.read_file(handle)
         c = Configuration()
         c.max_threads = config.getint('DEFAULT', 'threads')
         c.p3_path = config.get('Primer3', 'path')

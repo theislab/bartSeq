@@ -4,11 +4,11 @@ import shlex
 import subprocess
 
 from Bio import SeqIO
-from Bio.SeqFeature import SeqFeature, FeatureLocation
+from Bio.SeqFeature import FeatureLocation
 
-from helpers.p3_parser import P3Parser
-from helpers.primerpair import PrimerPair, PrimerPairSet
-from helpers.primer import Primer, Amplicon, Gene, ExcludedRegion, TargetRegion
+from ..helpers.p3_parser import P3Parser
+from ..helpers.primerpair import PrimerPair, PrimerPairSet
+from ..helpers.primer import Primer, Amplicon, Gene, ExcludedRegion, TargetRegion
 
 
 class PrimerPredictor:
@@ -24,14 +24,14 @@ class PrimerPredictor:
             seq = str(record.seq)
 
             if seq.find("&") == -1:
-                print("Please specify fwd and rev primer sequences by separating them with \'&\' for the predefined "
-                      "primer " + record.id + ".")
+                print("Please specify fwd and rev primer sequences by separating them with '&' for the predefined "
+                      f"primer {record.id}.")
                 sys.exit(1)
 
             seqs = seq.split("&")
             if len(seqs) != 2:
-                print("Exactly two primer sequences (fwd&rev) have to provided for the predefined "
-                      "primer " + record.id + ".")
+                print(("Exactly two primer sequences (fwd&rev) have to provided for the predefined "
+                      f"primer {record.id}."))
                 sys.exit(1)
 
             pair_ind = 0
@@ -52,7 +52,6 @@ class PrimerPredictor:
                 True,
             ))
 
-
     def predict_primer_set(self):
         predefined_sets = dict()
         if self.predefined_handle is not None:
@@ -62,9 +61,8 @@ class PrimerPredictor:
         for record in SeqIO.parse(self.input_handle, "fasta"):
             gene = Gene(record.id)
             sequence = str(record.seq)
-            for i, sel_sequence in enumerate(re.split('//', sequence)):
-
-                s = re.sub(r"\[|\]|\<|\>", "", sel_sequence)
+            for sel_sequence in re.split(r'//', sequence):
+                s = re.sub(r"[\[\]<>]", "", sel_sequence)
                 amplicon = Amplicon(s)
 
                 if record.id in predefined_sets:
@@ -79,10 +77,10 @@ class PrimerPredictor:
 
                 if sel_sequence.find("<") >= 0 and sel_sequence.find(">") >= 0:
                     input_string += "SEQUENCE_EXCLUDED_REGION="
-                    spl_sequence = re.split(r"\<|\>", sel_sequence.replace("[", "").replace("]", ""))
-                    for i in xrange(0, len(spl_sequence) - 1, 2):
+                    spl_sequence = re.split(r"[<>]", sel_sequence.replace("[", "").replace("]", ""))
+                    for i in range(0, len(spl_sequence) - 1, 2):
                         start = 0
-                        for j in xrange(0, i + 1):
+                        for j in range(0, i + 1):
                             start += len(spl_sequence[j])
                         input_string += str(start + 1) + "," + str(len(spl_sequence[i + 1])) + " "
                         amplicon.add_feature(
@@ -94,10 +92,10 @@ class PrimerPredictor:
 
                 if sel_sequence.find("[") >= 0 and sel_sequence.find("]") >= 0:
                     input_string += "SEQUENCE_TARGET="
-                    spl_sequence = re.split(r"\[|\]", sel_sequence)
-                    for i in xrange(0, len(spl_sequence) - 1, 2):
+                    spl_sequence = re.split(r"[\[\]]", sel_sequence)
+                    for i in range(0, len(spl_sequence) - 1, 2):
                         start = 0
-                        for j in xrange(0, i + 1):
+                        for j in range(0, i + 1):
                             start += len(spl_sequence[j])
                         input_string += str(start + 1) + "," + str(len(spl_sequence[i + 1])) + " "
                         amplicon.add_feature(TargetRegion(FeatureLocation(start + 1, start + len(spl_sequence[i + 1]))))
@@ -111,7 +109,6 @@ class PrimerPredictor:
 
                 print(input_string)
 
-
                 p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 
                 p3_output = p.communicate(input_string)[0].strip()
@@ -119,22 +116,22 @@ class PrimerPredictor:
 
                 m = re.search(r'(?<=PRIMER_ERROR=)\w+', p3_output)
                 if m is not None:
-                    raise Exception("Error for sequence (Probably no primer found in region): " + record.id + ": " + m.group(0)+"\n Start NEW Primerprediction.")
+                    raise Exception(f"Error for sequence (Probably no primer found in region): {record.id}: {m.group(0)}\n Start NEW Primerprediction.")
 
                 primer_set = PrimerPairSet(record.id)
                 P3Parser.parse_p3_information(primer_set, p3_output)
 
                 if len(primer_set) == 0:
-                    print("WARNING: No primer found for " + record.id + " sequence " + str(i + 1) + ".")
+                    print(f"WARNING: No primer found for {record.id} sequence {i+1}.")
                     continue
 
                 amplicon.primer_set = primer_set
                 gene.append(amplicon)
 
-            if len(gene) == 0: raise Exception(
-                "No primer found for " + gene.name + ".  Consider less restrictive Primer3 settings.")
+            if len(gene) == 0:
+                raise Exception(f"No primer found for {gene.name}. Consider less restrictive Primer3 settings.")
             out_genes.append(gene)
         for key in predefined_sets:
-            print("WARNING: No input sequence could be found for the predefined primer " + key)
+            print("WARNING: No input sequence could be found for the predefined primer", key)
 
         return out_genes

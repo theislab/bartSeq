@@ -1,9 +1,7 @@
-from web_frontend.display.seq_plot import SeqPlotter
+from .seq_plot import SeqPlotter
 
-__author__ = 'Steffen'
 
 class PrimerSetFormatter:
-
     @staticmethod
     def format_primer_set(arrangements, sequence_set):
         s = '<h4>Rank 1: Sum MFE=-' + str(arrangements[0][0]) + '</h4>'\
@@ -65,10 +63,9 @@ class PrimerSetFormatter:
 
     @staticmethod
     def format_seq_primer(sequence_set):
-
         tab_header = "<div role='tabpanel'>\n<ul class='nav nav-tabs' role='tablist'>\n"
         tab_body = "<div class='tab-content'>\n"
-        for i, key in enumerate(sequence_set.keys()[::-1]):
+        for i, key in enumerate(list(sequence_set.keys())[::-1]):
             tab_header += "<li role='presentation'"
             if i == 0:
                 tab_header += " class='active'"
@@ -109,7 +106,7 @@ class PrimerSetFormatter:
                 tab_body += "<br><img src=\"/static/figures/p3seq/" + pic_name + "\"><br>"
                 tab_body += str_f + str_r + "<br>"
 
-                #rank mean penalty
+                # rank mean penalty
 
                 if seq.warning is not "":
                     tab_body += "<div class='alert alert-warning' role='alert'>" + seq.warning + "</div><br>"
@@ -117,26 +114,9 @@ class PrimerSetFormatter:
                 if seq.error is not "":
                     tab_body += "<div class='alert alert-danger' role='alert'>" + seq.error + "</div><br>"
 
-
             tab_body += "</div>"
-
-
-
 
         tab_header += "</ul>"
         tab_body += "</div>\n</div>\n<script>\n$('#myTab a').click(function (e) {\ne.preventDefault()\n$(this).tab('show')\n})\n</script>"
 
         return tab_header + "\n" + tab_body
-
-    def format_primer_set_ordering(arrangements, sequence_set):
-        s = '<h4>Rank 1: Sum MFE=-' + str(arrangements[0][0]) + '</h4>'\
-            + '<br>\n<div class="panel-group" id="p3selectResults" role="tablist" aria-multiselectable="true">\n'
-
-        v = arrangements[0][1]
-        for j, seq in enumerate(sequence_set):
-                pset = seq.primer_set
-                pair = pset.set[v[j]]
-                s += PrimerSetFormatter.format_primer_pair(pair, pset.name)
-
-        s += '</div>\n'
-        return s

@@ -1,14 +1,9 @@
-from __future__ import print_function
 import argparse
 import os
+from contextlib import suppress
 
-import Bio
-from primer_select.blaster import Blaster
-from primer_select.optimizer import Optimizer
-from primer_select.primer_predictor import PrimerPredictor
-from primer_select.ps_configuration import PsConfigurationHandler
-from primer_select.rnacofolder import Cofolder
-from primer_select.run_process import PrimerSelect
+from .ps_configuration import PsConfigurationHandler
+from .run_process import PrimerSelect
 
 
 parser = argparse.ArgumentParser(description='Run the PrimerSelect pipeline.')
@@ -28,24 +23,14 @@ args = parser.parse_args()
 if not os.path.isfile("../config.cfg"):
     PsConfigurationHandler.write_standard_config("../config.cfg")
 
-config_handle = open("../config.cfg", 'rU')
-config = PsConfigurationHandler.read_config(config_handle)
-config_handle.close()
+with open("../config.cfg", 'r') as config_handle:
+    config = PsConfigurationHandler.read_config(config_handle)
 
+linkers = ["ATGCGCATTC", "AGCGTAACCT"]
 
-if args.predefined != "":
-    predef_handle = open(args.predefined, 'rU')
-else:
-    predef_handle = None
-
-input_handle = open(args.input, 'rU')
-linkers=["ATGCGCATTC","AGCGTAACCT"]
-
-primer_sets = PrimerSelect.predict_primerset(config, input_handle, predef_handle, linkers)
-
-input_handle.close()
-if args.predefined != "":
-    predef_handle.close()
+predef_handle = open(args.predefined, 'r') if args.predefined else suppress()
+with predef_handle, open(args.input, 'r') as input_handle:
+    primer_sets = PrimerSelect.predict_primerset(config, input_handle, predef_handle, linkers)
 
 print("Blast done")
 opt_result = PrimerSelect.optimize(config, primer_sets, linkers)
