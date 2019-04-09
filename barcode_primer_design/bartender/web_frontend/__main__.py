@@ -1,6 +1,5 @@
 import io
 import os
-import re
 from pathlib import Path
 
 from flask import Flask, Markup, render_template, make_response, url_for
@@ -118,7 +117,6 @@ def primerselect():
                 raise Exception(
                     "You have to provide at least two input sequences in FASTA format."
                 )
-            pattern = re.compile(r"\d\$,")
             sequence_set = PrimerSelect.predict_primerset(
                 input_handle=input_string,
                 predefined_handle=predefined,
@@ -133,8 +131,8 @@ def primerselect():
                 PrimerSetFormatter.format_primer_set(opt_result, sequence_set)
             )
         except Exception as inst:
-            raise
-            print(inst)
+            if app.debug:
+                raise
             return render_template("primerselect.html", form=form, error=inst.args[0])
         return render_template(
             "primerselect.html", form=form, output=output, pretty_output=pretty_output
@@ -183,5 +181,5 @@ def plot():
 
 
 if __name__ == "__main__":
-    app.debug = True
-    app.run(host="0.0.0.0", debug=True, port=5000)
+    # Set set the environment variable FLASK_DEBUG=1 if you want to debug
+    app.run(host="0.0.0.0", port=5000)
