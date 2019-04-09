@@ -18,6 +18,8 @@
     <div class="form-group">
         {{ form.input.label }}
         {{ form.input(rows=15) }}
+    </div>
+    <div class="row">
         {% if form.input.errors %}
         <div class="alert alert-danger" role="alert">
             <ul class="errors">
@@ -31,6 +33,8 @@
     <div class="form-group">
         {{ form.predefined.label }}
         {{ form.predefined(rows=8) }}
+    </div>
+    <div class="row">
         {% if form.predefined.errors %}
         <div class="alert alert-danger" role="alert">
             <ul class="errors">
@@ -46,8 +50,10 @@
         {{ form.blast_db(class_='col-sm-4') }}
         {{ form.blast_hits.label }}
         {{ form.blast_hits(class_='col-sm-4') }}
+    </div>
+    <div class="row">
         {% if form.blast_hits.errors %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger col-sm-12" role="alert">
             <ul class="errors">
                 {% for element_error in form.blast_db.errors %}
                 <li>{{ element_error }}</li>
@@ -64,6 +70,8 @@
         {{ form.left_linker(class_='col-sm-4') }}
         {{ form.right_linker.label }}
         {{ form.right_linker(class_='col-sm-4') }}
+    </div>
+    <div class="row">
         {% if form.left_linker.errors %}
         <div class="alert alert-danger" role="alert">
             <ul class="errors">
@@ -83,6 +91,8 @@
         {{ form.configuration.label }}
         {{ form.configuration() }}
         {% if form.configuration.errors %}
+    </div>
+    <div class="row">
         <div class="alert alert-danger" role="alert">
             <ul class="errors">
                 {% for element_error in form.configuration.errors %}

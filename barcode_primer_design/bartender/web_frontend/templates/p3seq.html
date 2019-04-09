@@ -16,6 +16,8 @@
         <div class="form-group">
             {{ form.input.label }}
             {{ form.input(rows=15, cols=100) }}
+        </div>
+        <div class="row">
             {% if form.input.errors %}
             <div class="alert alert-danger" role="alert">
                 <ul class="errors">{% for element_error in form.input.errors %}
@@ -28,6 +30,8 @@
         <div class="form-group">
             {{ form.spacing.label }}
             {{ form.spacing(size=40) }}
+        </div>
+        <div class="row">
             {% if form.spacing.errors %}
             <div class="alert alert-danger" role="alert">
                 <ul class="errors">{% for element_error in form.spacing.errors %}
@@ -40,6 +44,8 @@
         <div class="form-group">
             {{ form.interval.label }}
             {{ form.interval(size=40) }}
+        </div>
+        <div class="row">
             {% if form.interval.errors %}
             <div class="alert alert-danger" role="alert">
                 <ul class="errors">{% for element_error in form.interval.errors %}
@@ -52,6 +58,8 @@
         <div class="form-group">
             {{ form.configuration.label }}
             {{ form.configuration() }}
+        </div>
+        <div class="row">
             {% if form.configuration.errors %}
             <div class="alert alert-danger" role="alert">
                 <ul class="errors">{% for element_error in form.configuration.errors %}
