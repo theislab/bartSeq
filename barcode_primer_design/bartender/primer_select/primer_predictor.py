@@ -2,24 +2,27 @@ import re
 import sys
 import shlex
 import subprocess
+from typing import TextIO
 
 from Bio import SeqIO
 from Bio.SeqFeature import FeatureLocation
 
-from ..helpers.p3_parser import P3Parser
+from ..helpers import parse_p3_information
 from ..helpers.primerpair import PrimerPair, PrimerPairSet
 from ..helpers.primer import Primer, Amplicon, Gene, ExcludedRegion, TargetRegion
+from . import PsConfiguration
 
 
 class PrimerPredictor:
-    def __init__(self, config, input_handle, predefined_handle):
+    def __init__(
+        self, config: PsConfiguration, input_handle: TextIO, predefined_handle: TextIO
+    ):
         self.config = config
         self.input_handle = input_handle
         self.predefined_handle = predefined_handle
 
     def parse_predefined_pairs(self, predefined_sets):
         for record in SeqIO.parse(self.predefined_handle, "fasta"):
-
             cur_id = record.id.split("_")[0]
             seq = str(record.seq)
 
@@ -157,7 +160,7 @@ class PrimerPredictor:
                     )
 
                 primer_set = PrimerPairSet(record.id)
-                P3Parser.parse_p3_information(primer_set, p3_output)
+                parse_p3_information(primer_set, p3_output)
 
                 if len(primer_set) == 0:
                     print(f"WARNING: No primer found for {record.id} sequence {i+1}.")

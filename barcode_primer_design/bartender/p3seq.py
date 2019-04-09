@@ -5,8 +5,8 @@ import subprocess
 from Bio import SeqIO
 from Bio.SeqFeature import FeatureLocation
 
-from ..helpers.p3_parser import P3Parser
-from ..helpers.primer import Amplicon, Gene, ExcludedRegion, TargetRegion, PrimerSet
+from .helpers import parse_p3seq_information
+from .helpers.primer import Amplicon, Gene, ExcludedRegion, TargetRegion, PrimerSet
 
 
 class P3SeqResult:
@@ -139,7 +139,7 @@ class P3Seq:
                         mw = re.search(r"(?<=PRIMER_WARNING=).+", p3_output)
                         if mw is not None:
                             ampl.warning += mw.group(0)
-                        P3Parser.parse_p3seq_information(
+                        parse_p3seq_information(
                             primer_set_fwd,
                             primer_set_rev,
                             p3_output,

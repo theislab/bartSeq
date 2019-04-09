@@ -106,71 +106,69 @@ def simulated_annealing(m):
     return v
 
 
-class SequenceFilters:
-    @staticmethod
-    def gc_content(sequences, num_gc):
-        return [
-            act_seq
-            for act_seq in sequences
-            if len(re.findall(r"[cg]", act_seq, flags=re.IGNORECASE)) == num_gc
-        ]
+def gc_content(sequences, num_gc):
+    return [
+        act_seq
+        for act_seq in sequences
+        if len(re.findall(r"[cg]", act_seq, flags=re.IGNORECASE)) == num_gc
+    ]
 
-    @staticmethod
-    def repeats(sequences, num_repeats, length_repeats):
-        new_sequences = []
 
-        for seq in sequences:
-            has_repeat = False
-            for l in range(length_repeats):
-                m = re.search(
-                    rf"(([gatc]{{{l+1}}})\2{{{num_repeats}}})", seq, flags=re.IGNORECASE
-                )
-                if m is not None:
-                    has_repeat = True
-            if has_repeat is not True:
-                new_sequences.append(seq)
+def repeats(sequences, num_repeats, length_repeats):
+    new_sequences = []
 
-        return new_sequences
+    for seq in sequences:
+        has_repeat = False
+        for l in range(length_repeats):
+            m = re.search(
+                rf"(([gatc]{{{l+1}}})\2{{{num_repeats}}})", seq, flags=re.IGNORECASE
+            )
+            if m is not None:
+                has_repeat = True
+        if has_repeat is not True:
+            new_sequences.append(seq)
 
-    @staticmethod
-    def similarity(sequences):
-        sequences = random.sample(sequences, 1000)
-        score_matrix = []
+    return new_sequences
 
-        pool = Pool(processes=5)
-        results = []
-        for i, seq1 in enumerate(sequences):
-            results.append(pool.apply_async(calculate_alignment, args=(sequences, i)))
 
-        pool.close()
-        pool.join()
+def similarity(sequences):
+    sequences = random.sample(sequences, 1000)
+    score_matrix = []
 
-        for res in results:
-            score_matrix.append(res.get())
+    pool = Pool(processes=5)
+    results = []
+    for i, seq1 in enumerate(sequences):
+        results.append(pool.apply_async(calculate_alignment, args=(sequences, i)))
 
-        for i in range(len(score_matrix)):
-            for j in range(i + 1, len(score_matrix)):
-                score_matrix[j][i] = score_matrix[i][j]
+    pool.close()
+    pool.join()
 
-        with open("score_matrix_new.txt", "w") as best:
-            for i in range(0, len(sequences)):
-                best.write(sequences[i] + "\t")
+    for res in results:
+        score_matrix.append(res.get())
+
+    for i in range(len(score_matrix)):
+        for j in range(i + 1, len(score_matrix)):
+            score_matrix[j][i] = score_matrix[i][j]
+
+    with open("score_matrix_new.txt", "w") as best:
+        for i in range(0, len(sequences)):
+            best.write(sequences[i] + "\t")
+        best.write("\n")
+        for i in range(0, len(sequences)):
+            best.write(sequences[i] + "\t")
+            for j in range(0, len(sequences)):
+                best.write(str(score_matrix[i][j]) + "\t")
             best.write("\n")
-            for i in range(0, len(sequences)):
-                best.write(sequences[i] + "\t")
-                for j in range(0, len(sequences)):
-                    best.write(str(score_matrix[i][j]) + "\t")
-                best.write("\n")
 
-        v = simulated_annealing(score_matrix)
+    v = simulated_annealing(score_matrix)
 
-        with open("best_new.txt", "w") as best:
-            for i in v:
-                best.write(sequences[i] + "\t")
+    with open("best_new.txt", "w") as best:
+        for i in v:
+            best.write(sequences[i] + "\t")
+        best.write("\n")
+        for i in v:
+            best.write(sequences[i] + "\t")
+            for j in v:
+                ind_i = sorted([i, j])
+                best.write(str(score_matrix[ind_i[0]][ind_i[1]]) + "\t")
             best.write("\n")
-            for i in v:
-                best.write(sequences[i] + "\t")
-                for j in v:
-                    ind_i = sorted([i, j])
-                    best.write(str(score_matrix[ind_i[0]][ind_i[1]]) + "\t")
-                best.write("\n")

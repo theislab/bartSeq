@@ -8,11 +8,11 @@ from flask_wtf.file import FileField, FileAllowed
 from werkzeug.utils import secure_filename, redirect
 from wtforms import StringField, validators, TextAreaField, SelectField, Field
 
-from ..p3seq.p3seq import P3Seq
-from ..primer_select.ps_configuration import PsConfigurationHandler
-from ..primer_select.run_process import PrimerSelect
-from .display.format_primerpair import PrimerSetFormatter
-from .display.seq_plot import SeqPlotter
+from ..p3seq import P3Seq
+from .. import primer_select
+from ..primer_select import PsConfiguration
+from .display.format_primerpair import format_seq_primer, format_primer_set
+from .display.seq_plot import seq_plot
 
 IN_DOCKER = "docker" in Path("/proc/1/cgroup").read_text()
 
@@ -116,7 +116,7 @@ def primerselect():
                 filename = str(PATH_PREFIX / "web_frontend" / "primer3_settings.txt")
 
             with (PATH_PREFIX / "config.cfg").open("r") as config_handle:
-                config = PsConfigurationHandler.read_config(config_handle)
+                config = PsConfiguration.read_config(config_handle)
             config.p3_config_path = filename
             config.blast_dbname = form.blast_db.data
             config.blast_max_hits = int(form.blast_hits.data)
@@ -124,19 +124,17 @@ def primerselect():
                 raise Exception(
                     "You have to provide at least two input sequences in FASTA format."
                 )
-            sequence_set = PrimerSelect.predict_primerset(
+            sequence_set = primer_select.predict_primerset(
                 input_handle=input_string,
                 predefined_handle=predefined,
                 config=config,
                 linkers=(form.left_linker.data, form.right_linker.data),
             )
-            opt_result = PrimerSelect.optimize(
+            opt_result = primer_select.optimize(
                 config, sequence_set, (form.left_linker.data, form.right_linker.data)
             )
-            output = PrimerSelect.output(opt_result, sequence_set)
-            pretty_output = Markup(
-                PrimerSetFormatter.format_primer_set(opt_result, sequence_set)
-            )
+            output = primer_select.output(opt_result, sequence_set)
+            pretty_output = Markup(format_primer_set(opt_result, sequence_set))
         except Exception as inst:
             if app.debug:
                 raise
@@ -163,14 +161,14 @@ def p3seq():
                 filename = str(PATH_PREFIX / "web_frontend" / "primer3_settings.txt")
 
             with (PATH_PREFIX / "config.cfg").open("r") as config_handle:
-                config = PsConfigurationHandler.read_config(config_handle)
+                config = PsConfiguration.read_config(config_handle)
             config.p3_config_path = filename
 
             p3_seq = P3Seq(config, input_string)
             output = p3_seq.run(
                 form.spacing.data.split(","), form.interval.data.split(",")
             )
-            output_html = PrimerSetFormatter.format_seq_primer(output)
+            output_html = format_seq_primer(output)
             return render_template("p3seq.html", form=form, output=Markup(output_html))
         except Exception as inst:
             print(inst)
@@ -181,8 +179,9 @@ def p3seq():
 
 @app.route("/plot.png")
 def plot():
-    output = SeqPlotter.seq_plot(None)
-    response = make_response(output.getvalue())
+    # TODO
+    output = seq_plot(None)
+    response = make_response(output)
     response.mimetype = "image/png"
     return response
 

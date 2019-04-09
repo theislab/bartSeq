@@ -7,6 +7,8 @@ class Amplicon:
     def __init__(self, sequence: str):
         self.sequence = sequence
         self.features: List[SeqFeature] = []
+        self.primer_set_fwd: Optional[PrimerSet] = None
+        self.primer_set_rev: Optional[PrimerSet] = None
 
     def add_feature(self, feature: SeqFeature):
         self.features.append(feature)

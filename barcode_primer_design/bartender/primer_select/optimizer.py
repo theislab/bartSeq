@@ -1,7 +1,10 @@
 import copy
 import math
 import random
-from typing import List
+from typing import List, Tuple
+
+
+Arrangement = Tuple[float, List[int], List[int]]
 
 
 class Optimizer:
@@ -9,7 +12,7 @@ class Optimizer:
         self.config = config
         self.sequence_set = sequence_set
 
-    def f(self, selected_pairs, selected_amplicons):
+    def f(self, selected_pairs, selected_amplicons) -> float:
         sum_mfes = 0
         for seq1, pair1 in enumerate(selected_pairs):
             for seq2, pair2 in enumerate(selected_pairs):
@@ -18,7 +21,7 @@ class Optimizer:
                 ][seq2][selected_amplicons[seq2]][pair2]
         return sum_mfes / 2
 
-    def optimize(self):
+    def optimize(self) -> List[Arrangement]:
         max_ind = self.config.opt_steps
         max_temperature = min(self.config.opt_max_temp, self.config.opt_steps)
 
@@ -32,7 +35,7 @@ class Optimizer:
             for amplicon in aset:
                 set_lengths[i].append(len(amplicon.primer_set))
 
-        combinations = []
+        combinations: List[Arrangement] = []
         act_temperature = max_temperature
 
         w = []
@@ -115,7 +118,7 @@ class Optimizer:
             combinations.append((self.f(v, w), copy.copy(v), copy.copy(w)))
             i += 1
 
-        unique_arrangements = []
+        unique_arrangements: List[Arrangement] = []
         arrangements = sorted(combinations, key=lambda x: x[0])
 
         for run in arrangements:

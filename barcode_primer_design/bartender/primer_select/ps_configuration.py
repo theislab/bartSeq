@@ -1,9 +1,20 @@
 from configparser import RawConfigParser
+from typing import NamedTuple, TextIO
 
-from ..configuration import Configuration, ConfigurationHandler
 
+class PsConfiguration(NamedTuple):
+    max_threads: int
+    p3_path: str
+    p3_config_path: str
+    p3_thermo_path: str
+    blast_path: str
+    blast_dbpath: str
+    blast_dbname: str
+    blast_max_hits: int
+    rnacf_path: str
+    opt_steps: int
+    opt_max_temp: int
 
-class PsConfigurationHandler(ConfigurationHandler):
     @staticmethod
     def write_standard_config(path):  # Write the standard settings file
         """ Write the standard settings file
@@ -33,25 +44,21 @@ class PsConfigurationHandler(ConfigurationHandler):
             config.write(configfile)
 
     @staticmethod
-    def read_config(handle):  # Read the settings file
+    def read_config(handle: TextIO) -> "PsConfiguration":  # Read the settings file
         """ Read the settings file
         """
         config = RawConfigParser()
         config.read_file(handle)
-        c = Configuration()
-        c.max_threads = config.getint("DEFAULT", "threads")
-        c.p3_path = config.get("Primer3", "path")
-        c.p3_config_path = config.get("Primer3", "configPath")
-        c.p3_thermo_path = config.get("Primer3", "thermoParamPath")
-
-        c.blast_path = config.get("BLAST", "path")
-        c.blast_dbpath = config.get("BLAST", "db_path")
-        c.blast_dbname = config.get("BLAST", "db_name")
-        c.blast_max_hits = config.getint("BLAST", "maxHits")
-
-        c.rnacf_path = config.get("RNAcofold", "path")
-
-        c.opt_steps = config.getint("Optimization", "steps")
-        c.opt_max_temp = config.getint("Optimization", "maxTemp")
-
-        return c
+        return PsConfiguration(
+            max_threads=config.getint("DEFAULT", "threads"),
+            p3_path=config.get("Primer3", "path"),
+            p3_config_path=config.get("Primer3", "configPath"),
+            p3_thermo_path=config.get("Primer3", "thermoParamPath"),
+            blast_path=config.get("BLAST", "path"),
+            blast_dbpath=config.get("BLAST", "db_path"),
+            blast_dbname=config.get("BLAST", "db_name"),
+            blast_max_hits=config.getint("BLAST", "maxHits"),
+            rnacf_path=config.get("RNAcofold", "path"),
+            opt_steps=config.getint("Optimization", "steps"),
+            opt_max_temp=config.getint("Optimization", "maxTemp"),
+        )
