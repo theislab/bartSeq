@@ -15,7 +15,7 @@
         {{ form.hidden_tag() }}
         <div class="form-group">
             {{ form.input.label }}
-            {{ form.input(rows=15, cols=100) }}
+            {{ form.input(rows=15) }}
         </div>
         <div class="row">
             {% if form.input.errors %}
@@ -29,26 +29,18 @@
         </div>
         <div class="form-group">
             {{ form.spacing.label }}
-            {{ form.spacing(size=40) }}
+            {{ form.spacing(class_='col-sm-4') }}
+            {{ form.interval.label }}
+            {{ form.interval(class_='col-sm-4') }}
         </div>
         <div class="row">
-            {% if form.spacing.errors %}
+            {% if form.spacing.errors or form.interval.errors %}
             <div class="alert alert-danger" role="alert">
-                <ul class="errors">{% for element_error in form.spacing.errors %}
+                <ul class="errors">
+                    {% for element_error in form.spacing.errors %}
                     <li>{{ element_error }}</li>
                     {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-        </div>
-        <div class="form-group">
-            {{ form.interval.label }}
-            {{ form.interval(size=40) }}
-        </div>
-        <div class="row">
-            {% if form.interval.errors %}
-            <div class="alert alert-danger" role="alert">
-                <ul class="errors">{% for element_error in form.interval.errors %}
+                    {% for element_error in form.interval.errors %}
                     <li>{{ element_error }}</li>
                     {% endfor %}
                 </ul>

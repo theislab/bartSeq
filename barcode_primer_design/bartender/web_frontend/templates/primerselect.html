@@ -52,7 +52,7 @@
         {{ form.blast_hits(class_='col-sm-4') }}
     </div>
     <div class="row">
-        {% if form.blast_hits.errors %}
+        {% if form.blast_db.errors or form.blast_hits.errors %}
         <div class="alert alert-danger col-sm-12" role="alert">
             <ul class="errors">
                 {% for element_error in form.blast_db.errors %}
@@ -72,7 +72,7 @@
         {{ form.right_linker(class_='col-sm-4') }}
     </div>
     <div class="row">
-        {% if form.left_linker.errors %}
+        {% if form.left_linker.errors or form.right_linker.errors %}
         <div class="alert alert-danger" role="alert">
             <ul class="errors">
                 {% for element_error in form.left_linker.errors %}
