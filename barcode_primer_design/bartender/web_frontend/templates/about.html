@@ -1,39 +1,20 @@
-
 {% extends "base.html" %}
 {% block title %}PrimerSelect{% endblock %}
 {% block content %}
 <div class="page-header">
-    <br>
-
     <h1>About PrimerSelect</h1>
 </div>
 
-
 <div role='tabpanel'>
-
     <div class='tab-content'>
-
         Primerselect is developed and hosted at Institute of Computational Biology,
         Helmholtz Zentrum München, Germany.
-
-
-
-
     </div>
-<script>
-    $('#myTab a').click(function (e) {
-        e.preventDefault()
-        $(this).tab('show')
-    })
-</script>
-
-<br>
-
 </div>
 
 {% if pretty_output %}
 {{ pretty_output }}
-{% endif %}<br><br>
+{% endif %}
 
 {% if output %}
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
@@ -60,4 +41,3 @@
 </div>
 {% endif %}
 {% endblock %}
-        <br>

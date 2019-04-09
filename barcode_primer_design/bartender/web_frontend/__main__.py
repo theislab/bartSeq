@@ -3,10 +3,10 @@ import os
 import re
 from pathlib import Path
 
-from flask import Flask, Markup, render_template, make_response
+from flask import Flask, Markup, render_template, make_response, url_for
 from flask_wtf import Form
 from flask_wtf.file import FileField, FileAllowed
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename, redirect
 from wtforms import StringField, validators, TextAreaField, SelectField
 
 from ..p3seq.p3seq import P3Seq
@@ -73,7 +73,7 @@ class P3seqForm(Form):
 
 @app.route("/")
 def main_page():
-    return primerselect()
+    return redirect(url_for("primerselect"))
 
 
 @app.route("/about")

@@ -2,11 +2,8 @@
 {% block title %}P3seq{% endblock %}
 {% block content %}
     <div class="page-header">
-        <br>
-
         <h1>P3seq</h1>
     </div>
-
 
     {% if error %}
         <div class="alert alert-danger" role="alert">
@@ -14,13 +11,13 @@
         </div>
     {% endif %}
 
-<form method="POST" action="/p3seq" enctype=multipart/form-data>
+    <form method="POST" action="/p3seq" enctype=multipart/form-data>
         {{ form.hidden_tag() }}
         <table>
             <tr>
-
                 <td>{{ form.input.label }}</td>
-                <td style="padding: 15px;">{{ form.input(rows=15, cols=100) }}<br>
+                <td style="padding: 15px;">
+                    {{ form.input(rows=15, cols=100) }}
                     {% if form.input.errors %}
                     <div class="alert alert-danger" role="alert">
                         <ul class="errors">{% for element_error in form.input.errors %}
@@ -31,50 +28,53 @@
                     {% endif %}
                 </td>
             </tr>
-
-            <td>{{ form.spacing.label }}</td>
-            <td style="padding: 15px;">{{ form.spacing(size=40) }}
-            {% if form.spacing.errors %}
-            <div class="alert alert-danger" role="alert">
-                <ul class="errors">{% for element_error in form.spacing.errors %}
-                    <li>{{ element_error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}</td></tr>
-
-            <td>{{ form.interval.label }}</td>
-            <td style="padding: 15px;">{{ form.interval(size=40) }}
-            {% if form.interval.errors %}
-            <div class="alert alert-danger" role="alert">
-                <ul class="errors">{% for element_error in form.interval.errors %}
-                    <li>{{ element_error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}</td></tr>
-
-            <td>{{ form.configuration.label }}</td>
-            <td style="padding: 15px;">{{ form.configuration() }}
-            {% if form.configuration.errors %}
-            <div class="alert alert-danger" role="alert">
-                <ul class="errors">{% for element_error in form.configuration.errors %}
-                    <li>{{ element_error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}</td></tr>
-
+            <tr>
+                <td>{{ form.spacing.label }}</td>
+                <td style="padding: 15px;">
+                    {{ form.spacing(size=40) }}
+                    {% if form.spacing.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="errors">{% for element_error in form.spacing.errors %}
+                            <li>{{ element_error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ form.interval.label }}</td>
+                <td style="padding: 15px;">
+                    {{ form.interval(size=40) }}
+                    {% if form.interval.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="errors">{% for element_error in form.interval.errors %}
+                            <li>{{ element_error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>{{ form.configuration.label }}</td>
+                <td style="padding: 15px;">
+                    {{ form.configuration() }}
+                    {% if form.configuration.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="errors">{% for element_error in form.configuration.errors %}
+                            <li>{{ element_error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
         </table>
-        <input type="submit" value="Go"><br>
+        <input type="submit" value="Go">
     </form>
-<br>
-         <!--<img src="plot.png">-->
-
-<br>
-
-        {% if output %}
-        {{ output }}
-        {% endif %}
-        <br>
+    <!--<p><img src="plot.png"></p>-->
+    {% if output %}
+    {{ output }}
+    {% endif %}
 {% endblock %}
