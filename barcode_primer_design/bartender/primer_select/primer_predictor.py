@@ -149,7 +149,11 @@ class PrimerPredictor:
                     args, stdin=subprocess.PIPE, stdout=subprocess.PIPE
                 )
 
-                p3_output = p.communicate(input_string)[0].strip()
+                p3_output = (
+                    p.communicate(input_string.encode("utf-8"))[0]
+                    .strip()
+                    .decode("utf-8")
+                )
                 print(p3_output)
 
                 m = re.search(r"(?<=PRIMER_ERROR=)\w+", p3_output)
