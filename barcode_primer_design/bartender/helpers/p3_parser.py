@@ -6,7 +6,7 @@ from .primerpair import PrimerPair
 
 
 def parse_p3_information(primer_pair_set, p3output):
-    ini_str = "[root]\n" + p3output[: len(p3output) - 1]
+    ini_str = f"[root]\n{p3output.rstrip('=')}"
     content = configparser.RawConfigParser()
     content.read_string(ini_str)
 

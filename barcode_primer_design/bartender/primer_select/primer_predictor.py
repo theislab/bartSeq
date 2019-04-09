@@ -136,24 +136,31 @@ class PrimerPredictor:
                     + "\n="
                 )
 
-                cmd = (
-                    self.config.p3_path
-                    + " -p3_settings_file="
-                    + self.config.p3_config_path
-                )
-                args = shlex.split(cmd)
+                args = [
+                    self.config.p3_path,
+                    f"-p3_settings_file={self.config.p3_config_path}",
+                ]
 
                 print(input_string)
 
-                p = subprocess.Popen(
-                    args, stdin=subprocess.PIPE, stdout=subprocess.PIPE
-                )
+                try:
+                    p = subprocess.run(
+                        args,
+                        input=input_string,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                        encoding="utf-8",
+                        check=True,
+                    )
+                except subprocess.CalledProcessError as e:
+                    raise Exception(
+                        f"Could not run primer3. Returncode: {e.returncode}\n"
+                        f"STDOUT:\n\n{e.stdout}\n\n"
+                        f"STDERR:\n\n{e.stderr}\n\n"
+                    )
 
-                p3_output = (
-                    p.communicate(input_string.encode("utf-8"))[0]
-                    .strip()
-                    .decode("utf-8")
-                )
+                p3_output = p.stdout.strip()
                 print(p3_output)
 
                 m = re.search(r"(?<=PRIMER_ERROR=)\w+", p3_output)
