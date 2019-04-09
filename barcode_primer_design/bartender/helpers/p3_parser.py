@@ -37,7 +37,8 @@ class P3Parser:
             loc = list(
                 map(int, content.get("root", "PRIMER_RIGHT_" + str(i)).split(","))
             )
-            # python style indexing: we start at the index right of the end, and go left, so index and position are equal
+            # python style indexing: we start at the index right of the end,
+            # and go left, so index and position are equal
             rev = Primer(
                 content.get("root", "PRIMER_RIGHT_" + str(i) + "_SEQUENCE"),
                 loc[0],

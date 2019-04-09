@@ -152,7 +152,8 @@ class PrimerPredictor:
                 m = re.search(r"(?<=PRIMER_ERROR=)\w+", p3_output)
                 if m is not None:
                     raise Exception(
-                        f"Error for sequence (Probably no primer found in region): {record.id}: {m.group(0)}\n Start NEW Primerprediction."
+                        "Error for sequence (Probably no primer found in region): "
+                        f"{record.id}: {m.group(0)}\n Start NEW Primerprediction."
                     )
 
                 primer_set = PrimerPairSet(record.id)

@@ -254,6 +254,9 @@ class PrimerSetFormatter:
             tab_body += "</div>"
 
         tab_header += "</ul>"
-        tab_body += "</div>\n</div>\n<script>\n$('#myTab a').click(function (e) {\ne.preventDefault()\n$(this).tab('show')\n})\n</script>"
+        tab_body += (
+            "</div>\n</div>\n<script>\n$('#myTab a').click(function (e) {\n"
+            "e.preventDefault()\n$(this).tab('show')\n})\n</script>"
+        )
 
         return tab_header + "\n" + tab_body

@@ -87,7 +87,8 @@ class Blaster:
 
                 if len(amplicon.primer_set.set) == 0:
                     print(
-                        f"WARNING: At least one amplicon was removed from gene {gene.name} due to too many BLAST hits.\n"
+                        "WARNING: At least one amplicon was removed from"
+                        f"gene {gene.name} due to too many BLAST hits.\n"
                     )
 
                 index += 1
