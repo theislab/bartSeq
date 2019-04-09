@@ -6,7 +6,7 @@
 Computation might take a short moment, while page is not responsive.</p>
 
 {% if error %}
-<div class="alert alert-danger" role="alert">
+<div class="alert alert-danger" role=alert>
     {{ error }}
 </div>
 {% endif %}
@@ -19,7 +19,7 @@ Computation might take a short moment, while page is not responsive.</p>
     </div>
     <div class="row">
         {% if form.input.errors %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role=alert>
             <ul class="errors">
                 {% for element_error in form.input.errors %}
                 <li>{{ element_error }}</li>
@@ -34,7 +34,7 @@ Computation might take a short moment, while page is not responsive.</p>
     </div>
     <div class="row">
         {% if form.predefined.errors %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role=alert>
             <ul class="errors">
                 {% for element_error in form.predefined.errors %}
                 <li>{{ element_error }}</li>
@@ -51,7 +51,7 @@ Computation might take a short moment, while page is not responsive.</p>
     </div>
     <div class="row">
         {% if form.blast_db.errors or form.blast_hits.errors %}
-        <div class="alert alert-danger col-sm-12" role="alert">
+        <div class="alert alert-danger col-sm-12" role=alert>
             <ul class="errors">
                 {% for element_error in form.blast_db.errors %}
                 <li>{{ element_error }}</li>
@@ -71,7 +71,7 @@ Computation might take a short moment, while page is not responsive.</p>
     </div>
     <div class="row">
         {% if form.left_linker.errors or form.right_linker.errors %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role=alert>
             <ul class="errors">
                 {% for element_error in form.left_linker.errors %}
                 <li>{{ element_error }}</li>
@@ -91,7 +91,7 @@ Computation might take a short moment, while page is not responsive.</p>
         {% if form.configuration.errors %}
     </div>
     <div class="row">
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role=alert>
             <ul class="errors">
                 {% for element_error in form.configuration.errors %}
                 <li>{{ element_error }}</li>
@@ -100,7 +100,7 @@ Computation might take a short moment, while page is not responsive.</p>
         </div>
         {% endif %}
     </div>
-    <button type="submit" id="startButton" class="btn btn-primary">
+    <button class="btn btn-primary" type=submit>
         Start analysis
     </button>
 </form>
@@ -110,24 +110,31 @@ Computation might take a short moment, while page is not responsive.</p>
 {% endif %}
 
 {% if output %}
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+<button type="button" class="btn btn-primary" data-toggle=modal data-target="#output">
     Show text output
 </button>
 
-<div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div
+    class="modal fade bs-example-modal-lg"
+    id=output
+    tabindex="-1"
+    role=dialog
+    aria-labelledby=output-label
+    aria-hidden=true
+>
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="myModalLabel">Text output</h4>
+                <button type=button class="close" data-dismiss=modal>
+                    <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id=output-label>Text output</h4>
             </div>
             <div class="modal-body">
-                <p style="white-space: pre-wrap;">
-                    {{ output }}
-                </p>
+                <pre>{{ output }}</pre>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                <button type=button class="btn btn-primary" data-dismiss=modal>Close</button>
             </div>
         </div>
     </div>

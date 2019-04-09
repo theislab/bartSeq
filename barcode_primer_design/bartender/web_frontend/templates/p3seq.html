@@ -4,12 +4,12 @@
 <h1>P3seq</h1>
 
 {% if error %}
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger" role=alert>
         {{ error }}
     </div>
 {% endif %}
 
-<form class="form-horizontal" method="POST" action="/p3seq" enctype=multipart/form-data>
+<form class="form-horizontal" method=POST action="/p3seq" enctype=multipart/form-data>
     {{ form.hidden_tag() }}
     <div class="form-group row">
         {{ form.input.label }}
@@ -17,7 +17,7 @@
     </div>
     <div class="row">
         {% if form.input.errors %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role=alert>
             <ul class="errors">{% for element_error in form.input.errors %}
                 <li>{{ element_error }}</li>
                 {% endfor %}
@@ -33,7 +33,7 @@
     </div>
     <div class="row">
         {% if form.spacing.errors or form.interval.errors %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role=alert>
             <ul class="errors">
                 {% for element_error in form.spacing.errors %}
                 <li>{{ element_error }}</li>
@@ -51,7 +51,7 @@
     </div>
     <div class="row">
         {% if form.configuration.errors %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger" role=alert>
             <ul class="errors">{% for element_error in form.configuration.errors %}
                 <li>{{ element_error }}</li>
                 {% endfor %}
@@ -59,7 +59,9 @@
         </div>
         {% endif %}
     </div>
-    <input type="submit" value="Go">
+    <button class="btn btn-primary" type=submit>
+        Go
+    </button>
 </form>
 <!--<p><img src="plot.png"></p>-->
 {% if output %}

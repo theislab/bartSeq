@@ -23,30 +23,30 @@
 <body role="document">
 
 <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-dark" role=navigation>
-    <a class=navbar-brand href="/">Home</a>
+    <a class="navbar-brand" href="/">Home</a>
     <button
         type=button
-        class=navbar-toggler
+        class="navbar-toggler"
         data-toggle=collapse
         data-target="#navbar"
         aria-expanded=false
         aria-controls=navbar
         aria-label="Toggle navigation"
     >
-        <span class=navbar-toggler-icon></span>
+        <span class="navbar-toggler-icon"></span>
     </button>
-    <div id=navbar class='collapse navbar-collapse'>
-        <ul class=navbar-nav>
+    <div id=navbar class="collapse navbar-collapse">
+        <ul class="navbar-nav">
             {% for subpage, title in [('primerselect', 'PrimerSelect'), ('about_page', 'About')] %}
             <li class="nav-item {{ 'active' if request.path == url_for(subpage) }}">
-                <a class=nav-link href="{{ url_for(subpage) }}">{{ title }}</a>
+                <a class="nav-link" href="{{ url_for(subpage) }}">{{ title }}</a>
             </li>
             {% endfor %}
         </ul>
     </div>
 </nav>
 
-<main class=container>
+<main class="container">
 {% block content %}{% endblock %}
 </main>
 
