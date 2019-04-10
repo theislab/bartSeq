@@ -1,0 +1,65 @@
+<h3>Rank 1: Sum MFE=-{{ arrangement0 }}</h3>
+<div id=p3select-results class="accordion mb-3" role=tablist aria-multiselectable=true>
+{% for primer_pair, name, amplicon in pairs %}
+
+<div  class="card">
+  <div class="card-header" role="tab" id="heading-{{ name }}">
+    <h5 class="mb-0">
+      {% if primer_pair.predefined %}
+        {{ name }}:
+        {{ primer_pair.fwd.sequence.upper() }} – {{ primer_pair.rev.sequence.upper() }}
+        &emsp;Predefined
+      {% else %}
+        <button
+          class="btn btn-link"
+          data-toggle=collapse
+          data-target="#collapse-{{ name }}"
+          aria-expanded=false
+          aria-controls="collapse-{{ name }}"
+        >
+          {{ name }} (sequence {{ amplicon + 1 }}):
+          {{ primer_pair.fwd.sequence.upper() }} – {{ primer_pair.rev.sequence.upper() }}
+          &emsp;Product Size: {{ primer_pair.product_size }}
+        </button>
+      {% endif %}
+    </h5>
+  </div>
+  {% if not primer_pair.predefined %}
+  <div
+    id="collapse-{{ name }}"
+    class="collapse"
+    aria-labelledby="heading-{{ name }}"
+    data-parent="#p3select-results"
+  >
+    <div class="card-body">
+      Forward: {{ primer_pair.fwd.sequence.upper() }}<br>
+      <table style="width:100%">
+        <tr>
+          <td>Position: {{ primer_pair.fwd.location.start }} – {{ primer_pair.fwd.location.end }}</td>
+          <td>BLAST hits: {{ primer_pair.fwd.blast_hits }}</td>
+          <td>Length: {{ primer_pair.fwd | length }}</td>
+          <td>Tm: {{ primer_pair.fwd.tm }}</td>
+          <td>GC%: {{ primer_pair.fwd.gc_content }}</td>
+          <td>Any: {{ primer_pair.fwd.any }}</td>
+          <td>Self: {{ primer_pair.fwd.self }}</td>
+        </tr>
+      </table>
+      Reverse: {{ primer_pair.rev.sequence.upper() }}
+      <table style="width:100%">
+        <tr>
+          <td>Position: {{ primer_pair.rev.location.start }} – {{ primer_pair.rev.location.end }}</td>
+          <td>BLAST hits: {{ primer_pair.rev.blast_hits }}</td>
+          <td>Length: {{ primer_pair.rev | length }}</td>
+          <td>Tm: {{ primer_pair.rev.tm }}</td>
+          <td>GC%: {{ primer_pair.rev.gc_content }}</td>
+          <td>Any: {{ primer_pair.rev.any }}</td>
+          <td>Self: {{ primer_pair.rev.self }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+{% endfor %}
+</div>

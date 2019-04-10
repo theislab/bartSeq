@@ -10,58 +10,56 @@
 {% endif %}
 
 <form class="form-horizontal" method=POST action="/p3seq" enctype=multipart/form-data>
-    {{ form.hidden_tag() }}
-    <div class="form-group row">
-        {{ form.input.label }}
-        {{ form.input(rows=15) }}
+  {{ form.hidden_tag() }}
+  <div class="form-group row">
+    {{ form.input.label }}
+    {{ form.input(rows=15) }}
+  </div>
+  <div class="row">
+    {% if form.input.errors %}
+    <div class="alert alert-danger" role=alert>
+      <ul class="errors">{% for element_error in form.input.errors %}
+        <li>{{ element_error }}</li>
+        {% endfor %}
+      </ul>
     </div>
-    <div class="row">
-        {% if form.input.errors %}
-        <div class="alert alert-danger" role=alert>
-            <ul class="errors">{% for element_error in form.input.errors %}
-                <li>{{ element_error }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
+    {% endif %}
+  </div>
+  <div class="form-group row">
+    {{ form.spacing.label }}
+    {{ form.spacing(class_='col-sm-4 form-control') }}
+    {{ form.interval.label }}
+    {{ form.interval(class_='col-sm-4 form-control') }}
+  </div>
+  <div class="row">
+    {% if form.spacing.errors or form.interval.errors %}
+    <div class="alert alert-danger" role=alert>
+      <ul class="errors">
+        {% for element_error in form.spacing.errors %}
+        <li>{{ element_error }}</li>
+        {% endfor %}
+        {% for element_error in form.interval.errors %}
+        <li>{{ element_error }}</li>
+        {% endfor %}
+      </ul>
     </div>
-    <div class="form-group row">
-        {{ form.spacing.label }}
-        {{ form.spacing(class_='col-sm-4 form-control') }}
-        {{ form.interval.label }}
-        {{ form.interval(class_='col-sm-4 form-control') }}
+    {% endif %}
+  </div>
+  <div class="form-group row">
+    {{ form.configuration.label }}
+    {{ form.configuration() }}
+  </div>
+  <div class="row">
+    {% if form.configuration.errors %}
+    <div class="alert alert-danger" role=alert>
+      <ul class="errors">{% for element_error in form.configuration.errors %}
+        <li>{{ element_error }}</li>
+        {% endfor %}
+      </ul>
     </div>
-    <div class="row">
-        {% if form.spacing.errors or form.interval.errors %}
-        <div class="alert alert-danger" role=alert>
-            <ul class="errors">
-                {% for element_error in form.spacing.errors %}
-                <li>{{ element_error }}</li>
-                {% endfor %}
-                {% for element_error in form.interval.errors %}
-                <li>{{ element_error }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-    </div>
-    <div class="form-group row">
-        {{ form.configuration.label }}
-        {{ form.configuration() }}
-    </div>
-    <div class="row">
-        {% if form.configuration.errors %}
-        <div class="alert alert-danger" role=alert>
-            <ul class="errors">{% for element_error in form.configuration.errors %}
-                <li>{{ element_error }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-    </div>
-    <button class="btn btn-primary" type=submit>
-        Go
-    </button>
+    {% endif %}
+  </div>
+  <button class="btn btn-primary" type=submit>Go</button>
 </form>
 <!--<p><img src="plot.png"></p>-->
 {% if output %}

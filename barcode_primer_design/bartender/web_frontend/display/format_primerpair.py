@@ -1,136 +1,20 @@
+from flask import render_template
+
 from .seq_plot import seq_plot
 
 
 def format_primer_set(arrangements, sequence_set):
-    s = (
-        "<h4>Rank 1: Sum MFE=-"
-        + str(arrangements[0][0])
-        + "</h4>"
-        + '<br>\n<div id="p3selectResults" role="tablist" aria-multiselectable="true">\n'
-    )
-
     v = arrangements[0][1]
     w = arrangements[0][2]
+    pairs = []
     for j, seq in enumerate(sequence_set):
         amplicon = w[j]
         pset = seq.amplicons[amplicon].primer_set
         pair = pset.set[v[j]]
-        s += format_primer_pair(pair, pset.name, amplicon)
-
-    s += "</div>\n"
-    return s
-
-
-def format_primer_pair(primer_pair, name, amplicon):
-    s = (
-        '<div class="card">\n'
-        + '<div class="card-header" role="tab" id="heading'
-        + name
-        + '">\n'
-        + '<h4 class="card-title">\n'
+        pairs.append((pair, pset.name, amplicon))
+    return render_template(
+        "primer-result.html", arrangement0=arrangements[0][0], pairs=pairs
     )
-    if primer_pair.predefined:
-        s += (
-            '<a class="collapsed" data-toggle="collapse" data-parent="#tablist" href="#collapse'
-            + name
-            + '" aria-expanded="false" aria-controls="collapse'
-            + name
-            + '">\n'
-            + name
-            + ": "
-            + primer_pair.fwd.sequence.upper()
-            + " - "
-            + primer_pair.rev.sequence.upper()
-            + "&emsp;Predefined"
-            + "\n</a>\n"
-            + "</h4>\n"
-            + "</div>\n"
-            + "</div>\n"
-        )
-    else:
-        s += (
-            '<a class="collapsed" data-toggle="collapse" data-parent="#tablist" href="#collapse'
-            + name
-            + '" aria-expanded="false" aria-controls="collapse'
-            + name
-            + '">\n'
-            + name
-            + " (sequence "
-            + str(amplicon + 1)
-            + "): "
-            + primer_pair.fwd.sequence.upper()
-            + " - "
-            + primer_pair.rev.sequence.upper()
-            + "&emsp;Product Size: "
-            + str(primer_pair.product_size)
-            + "\n</a>\n"
-            + "</h4>\n"
-            + "</div>\n"
-            + '<div id="collapse'
-            + name
-            + '" class="collapse" role="tabpanel" aria-labelledby="heading'
-            + name
-            + '">\n'
-            + '<div class="card-body">\n'
-            + "Forward: "
-            + primer_pair.fwd.sequence.upper()
-            + "<br>\n"
-            + '<table style="width:100%"><tr>'
-            + "<td>Position: "
-            + str(primer_pair.fwd.location.start)
-            + " - "
-            + str(primer_pair.fwd.location.end)
-            + "</td>"
-            + "<td>BLAST hits: "
-            + str(primer_pair.fwd.blast_hits)
-            + "</td>\n"
-            + "<td>Length: "
-            + str(len(primer_pair.fwd))
-            + "</td>\n"
-            + "<td>Tm: "
-            + str(primer_pair.fwd.tm)
-            + "</td>\n"
-            + "<td>GC%: "
-            + str(primer_pair.fwd.gc_content)
-            + "</td>"
-            + "<td>Any: "
-            + str(primer_pair.fwd.any)
-            + "</td>"
-            + "<td>Self: "
-            + str(primer_pair.fwd.self)
-            + "</td></tr></table><br>\n"
-            + "Reverse: "
-            + primer_pair.rev.sequence.upper()
-            + "<br>\n"
-            + '<table style="width:100%"><tr>'
-            + "<td>Position: "
-            + str(primer_pair.rev.location.start)
-            + " - "
-            + str(primer_pair.rev.location.end)
-            + "</td>"
-            + "<td>BLAST hits: "
-            + str(primer_pair.rev.blast_hits)
-            + "</td>\n"
-            + "<td>Length: "
-            + str(len(primer_pair.rev))
-            + "</td>\n"
-            + "<td>Tm: "
-            + str(primer_pair.rev.tm)
-            + "</td>\n"
-            + "<td>GC%: "
-            + str(primer_pair.rev.gc_content)
-            + "</td>"
-            + "<td>Any: "
-            + str(primer_pair.rev.any)
-            + "</td>"
-            + "<td>Self: "
-            + str(primer_pair.rev.self)
-            + "</td></tr></table><br>\n"
-            + "\n</div>\n"
-            + "</div>\n"
-            + "</div>\n"
-        )
-    return s
 
 
 def format_seq_primer(sequence_set):
