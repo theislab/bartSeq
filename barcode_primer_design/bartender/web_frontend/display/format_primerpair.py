@@ -6,7 +6,7 @@ def format_primer_set(arrangements, sequence_set):
         "<h4>Rank 1: Sum MFE=-"
         + str(arrangements[0][0])
         + "</h4>"
-        + '<br>\n<div class="panel-group" id="p3selectResults" role="tablist" aria-multiselectable="true">\n'
+        + '<br>\n<div id="p3selectResults" role="tablist" aria-multiselectable="true">\n'
     )
 
     v = arrangements[0][1]
@@ -23,11 +23,11 @@ def format_primer_set(arrangements, sequence_set):
 
 def format_primer_pair(primer_pair, name, amplicon):
     s = (
-        '<div class="panel panel-default">\n'
-        + '<div class="panel-heading" role="tab" id="heading'
+        '<div class="card">\n'
+        + '<div class="card-header" role="tab" id="heading'
         + name
         + '">\n'
-        + '<h4 class="panel-title">\n'
+        + '<h4 class="card-title">\n'
     )
     if primer_pair.predefined:
         s += (
@@ -68,10 +68,10 @@ def format_primer_pair(primer_pair, name, amplicon):
             + "</div>\n"
             + '<div id="collapse'
             + name
-            + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading'
+            + '" class="collapse" role="tabpanel" aria-labelledby="heading'
             + name
             + '">\n'
-            + '<div class="panel-body">\n'
+            + '<div class="card-body">\n'
             + "Forward: "
             + primer_pair.fwd.sequence.upper()
             + "<br>\n"

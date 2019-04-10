@@ -1,5 +1,6 @@
 import io
 import os
+import pickle
 from pathlib import Path
 
 from flask import Flask, Markup, render_template, make_response, url_for
@@ -90,61 +91,77 @@ def about_page():
 @app.route("/primerselect", methods=("GET", "POST"))
 def primerselect():
     form = PrimerSelectForm()
-    if form.validate_on_submit():
-        input_string = io.StringIO(form.input.data)
-        if form.predefined.data != "":
-            predefined = io.StringIO(form.predefined.data)
-        else:
-            predefined = None
+    if not form.validate_on_submit():
+        return render_template("primerselect.html", form=form)
+
+    input_string = io.StringIO(form.input.data)
+    if form.predefined.data != "":
+        predefined = io.StringIO(form.predefined.data)
+    else:
+        predefined = None
+    try:
         try:
-            try:
-                filename = secure_filename(
-                    os.path.join("uploads", form.configuration.data.filename)
-                )
-                form.configuration.data.save(filename)
-
-                # fix up config files
-                with io.open(filename, "r") as infile:
-                    lines = infile.readlines()
-                    with io.open(filename, "w", newline="\n") as outfile:
-                        for line in lines:
-                            line = line.replace(
-                                "http://primer3.sourceforge.net", "http://primer3.org"
-                            )
-                            outfile.write(line)
-            except AttributeError as e:
-                filename = str(PATH_PREFIX / "web_frontend" / "primer3_settings.txt")
-
-            with (PATH_PREFIX / "config.cfg").open("r") as config_handle:
-                config = PsConfiguration.read_config(config_handle)
-            config.p3_config_path = filename
-            config.p3_thermo_path = str(PATH_PREFIX.parent / "primer3_config")
-            config.blast_dbpath = str(PATH_PREFIX.parent / "databases")
-            config.blast_dbname = form.blast_db.data
-            config.blast_max_hits = int(form.blast_hits.data)
-            if form.input.data.count(">") < 2:
-                raise Exception(
-                    "You have to provide at least two input sequences in FASTA format."
-                )
-            sequence_set = primer_select.predict_primerset(
-                input_handle=input_string,
-                predefined_handle=predefined,
-                config=config,
-                linkers=(form.left_linker.data, form.right_linker.data),
+            filename = secure_filename(
+                os.path.join("uploads", form.configuration.data.filename)
             )
-            opt_result = primer_select.optimize(
-                config, sequence_set, (form.left_linker.data, form.right_linker.data)
+            form.configuration.data.save(filename)
+
+            # fix up config files
+            with io.open(filename, "r") as infile:
+                lines = infile.readlines()
+                with io.open(filename, "w", newline="\n") as outfile:
+                    for line in lines:
+                        line = line.replace(
+                            "http://primer3.sourceforge.net", "http://primer3.org"
+                        )
+                        outfile.write(line)
+        except AttributeError as e:
+            filename = str(PATH_PREFIX / "web_frontend" / "primer3_settings.txt")
+
+        with (PATH_PREFIX / "config.cfg").open("r") as config_handle:
+            config = PsConfiguration.read_config(config_handle)
+        config.p3_config_path = filename
+        config.p3_thermo_path = str(PATH_PREFIX.parent / "primer3_config")
+        config.blast_dbpath = str(PATH_PREFIX.parent / "databases")
+        config.blast_dbname = form.blast_db.data
+        config.blast_max_hits = int(form.blast_hits.data)
+        if form.input.data.count(">") < 2:
+            raise Exception(
+                "You have to provide at least two input sequences in FASTA format."
             )
-            output = primer_select.output(opt_result, sequence_set)
-            pretty_output = Markup(format_primer_set(opt_result, sequence_set))
-        except Exception as inst:
-            if app.debug:
-                raise
-            return render_template("primerselect.html", form=form, error=inst.args[0])
-        return render_template(
-            "primerselect.html", form=form, output=output, pretty_output=pretty_output
+        sequence_set = primer_select.predict_primerset(
+            input_handle=input_string,
+            predefined_handle=predefined,
+            config=config,
+            linkers=(form.left_linker.data, form.right_linker.data),
         )
-    return render_template("primerselect.html", form=form)
+        opt_result = primer_select.optimize(
+            config, sequence_set, (form.left_linker.data, form.right_linker.data)
+        )
+        output = primer_select.output(opt_result, sequence_set)
+        if app.debug:
+            Path("last-run.pickle").write_bytes(
+                pickle.dumps((opt_result, sequence_set))
+            )
+        pretty_output = Markup(format_primer_set(opt_result, sequence_set))
+    except Exception as inst:
+        if app.debug:
+            raise
+        return render_template("primerselect.html", form=form, error=inst.args[0])
+    return render_template(
+        "primerselect.html", form=form, output=output, pretty_output=pretty_output
+    )
+
+
+@app.route("/last-run")
+def last_run():
+    form = PrimerSelectForm()
+    opt_result, sequence_set = pickle.loads(Path("last-run.pickle").read_bytes())
+    output = primer_select.output(opt_result, sequence_set)
+    pretty_output = Markup(format_primer_set(opt_result, sequence_set))
+    return render_template(
+        "primerselect.html", form=form, output=output, pretty_output=pretty_output
+    )
 
 
 @app.route("/p3seq", methods=("GET", "POST"))
