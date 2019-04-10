@@ -6,7 +6,7 @@ RUN conda config --add channels conda-forge
 RUN conda config --add channels bioconda
 
 # install packages from bioconda
-RUN conda install primer3 blast-legacy viennarna
+RUN conda install primer3 blast viennarna
 
 # pip install required packages for bartender/Primerselect software
 COPY bartender/requirements.txt /barcode_primer_design/

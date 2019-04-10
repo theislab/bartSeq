@@ -1,6 +1,7 @@
 import re
 import shlex
-import subprocess
+
+from ..helpers import run_and_feed
 
 
 class Cofolder:
@@ -28,111 +29,32 @@ class Cofolder:
                     for l in range(0, len(gene_set[j].amplicons)):
                         for pair1 in gene_set[i].amplicons[k].primer_set.set:
                             for pair2 in gene_set[j].amplicons[l].primer_set.set:
-                                positions[
-                                    pair1.name
-                                    + "_"
-                                    + str(k)
-                                    + "&"
-                                    + pair2.name
-                                    + "_"
-                                    + str(l)
-                                ] = pos
+                                positions[f"{pair1.name}_{k}&{pair2.name}_{l}"] = pos
                                 pos += 12
-                                cofold_string_list.append(
-                                    ">"
-                                    + pair1.name
-                                    + "_"
-                                    + str(k)
-                                    + "_fwd"
-                                    + "&"
-                                    + pair2.name
-                                    + "_"
-                                    + str(l)
-                                    + "_fwd"
-                                    + "\n"
-                                )
-                                cofold_string_list.append(
-                                    linkers[0]
-                                    + pair1.fwd.sequence
-                                    + "&"
-                                    + linkers[0]
-                                    + pair2.fwd.sequence
-                                    + "\n"
-                                )
-                                cofold_string_list.append(
-                                    ">"
-                                    + pair1.name
-                                    + "_"
-                                    + str(k)
-                                    + "_rev"
-                                    + "&"
-                                    + pair2.name
-                                    + "_"
-                                    + str(l)
-                                    + "_rev"
-                                    + "\n"
-                                )
-                                cofold_string_list.append(
-                                    linkers[1]
-                                    + pair1.rev.sequence
-                                    + "&"
-                                    + linkers[1]
-                                    + pair2.rev.sequence
-                                    + "\n"
-                                )
-                                cofold_string_list.append(
-                                    ">"
-                                    + pair1.name
-                                    + "_"
-                                    + str(k)
-                                    + "_fwd"
-                                    + "&"
-                                    + pair2.name
-                                    + "_"
-                                    + str(l)
-                                    + "_rev"
-                                    + "\n"
-                                )
-                                cofold_string_list.append(
-                                    linkers[0]
-                                    + pair1.fwd.sequence
-                                    + "&"
-                                    + linkers[1]
-                                    + pair2.rev.sequence
-                                    + "\n"
-                                )
-                                cofold_string_list.append(
-                                    ">"
-                                    + pair1.name
-                                    + "_"
-                                    + str(k)
-                                    + "_rev"
-                                    + "&"
-                                    + pair2.name
-                                    + "_"
-                                    + str(l)
-                                    + "_fwd"
-                                    + "\n"
-                                )
-                                cofold_string_list.append(
-                                    linkers[1]
-                                    + pair1.rev.sequence
-                                    + "&"
-                                    + linkers[0]
-                                    + pair2.fwd.sequence
-                                    + "\n"
-                                )
+                                cofold_string_list += [
+                                    f">{pair1.name}_{k}_fwd&{pair2.name}_{l}_fwd\n",
+                                    f"{linkers[0]}{pair1.fwd.sequence}&{linkers[0]}{pair2.fwd.sequence}\n",
+                                    f">{pair1.name}_{k}_rev&{pair2.name}_{l}_rev\n",
+                                    f"{linkers[1]}{pair1.rev.sequence}&{linkers[1]}{pair2.rev.sequence}\n",
+                                    f">{pair1.name}_{k}_fwd&{pair2.name}_{l}_rev\n",
+                                    f"{linkers[0]}{pair1.fwd.sequence}&{linkers[1]}{pair2.rev.sequence}\n",
+                                    f">{pair1.name}_{k}_rev&{pair2.name}_{l}_fwd\n",
+                                    f"{linkers[1]}{pair1.rev.sequence}&{linkers[0]}{pair2.fwd.sequence}\n",
+                                ]
 
         # this is way faster than concatenating the strings inside the loop
         cofold_string = "".join(cofold_string_list)
-        cmd = self.config.rnacf_path + " --noPS --noLP -P dna_mathews2004.par"
-        args = shlex.split(cmd)
 
         print("\nRunning cofold prediction...")
 
-        p = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        rnac_output = p.communicate(cofold_string)[0].strip()
-        rnac_output = rnac_output.strip().split("\n")
+        p = run_and_feed(
+            self.config.rnacf_path,
+            noPS=True,
+            noLP=True,
+            P="dna_mathews2004.par",
+            _input_str=cofold_string,
+        )
+        rnac_output = p.stdout.strip().split("\n")
 
         for i in range(0, len(gene_set)):
             mfe_list = []

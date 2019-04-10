@@ -1,48 +1,39 @@
 from multiprocessing.pool import ThreadPool
-import shlex
 import os
-import subprocess
+from typing import List
+
+from ..helpers import run_and_feed
 
 
 class Blaster:
     def __init__(self, config):
         self.config = config
 
-    def run_task(self, input):
-        cmd = (
-            self.config.blast_path
-            + " -p blastn -r 1 -G -5 -E -5 -m 8 -d "
-            + os.path.join(self.config.blast_dbpath, self.config.blast_dbname)
+    def run_task(self, input: str):
+        print(f"BLASTing primer {input.split('_')[0]}")
+        p = run_and_feed(
+            self.config.blast_path,
+            reward=1,
+            gapopen=5,  # Steffen had -5 for both here?
+            gapextend=5,
+            outfmt=6,  # tabular
+            db=os.path.join(self.config.blast_dbpath, self.config.blast_dbname),
+            _input_str=input,
+            _long_arg_prefix="-",
         )
-        print(cmd)
-        print(f"BLASTing primer {str(input).split('_')[0]}")
-        p = subprocess.Popen(
-            shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE
-        )
-        r_string = p.communicate(str(input))[0].strip()
-        return r_string
+        return p.stdout.strip()
 
     def blast_primer_set(self, sequence_sets, linkers):
-        blast_strings = []
+        blast_strings: List[str] = []
         for gene in sequence_sets:
             for amplicon in gene.amplicons:
                 blast_string = ""
                 for pair in amplicon.primer_set.set:
                     blast_string += (
-                        ">"
-                        + pair.name
-                        + "_fwd\n"
-                        + linkers[0]
-                        + pair.fwd.sequence
-                        + "\n\n"
+                        f">{pair.name}_fwd\n{linkers[0]}{pair.fwd.sequence}\n\n"
                     )
                     blast_string += (
-                        ">"
-                        + pair.name
-                        + "_rev\n"
-                        + linkers[1]
-                        + pair.rev.sequence
-                        + "\n\n"
+                        f">{pair.name}_rev\n{linkers[1]}{pair.rev.sequence}\n\n"
                     )
                 blast_strings.append(blast_string)
 
@@ -61,19 +52,18 @@ class Blaster:
         for gene in sequence_sets:
             for amplicon in gene.amplicons:
                 blast_hits = []
-                blat_out_string = strings[index]
-                if blat_out_string == "":
-                    pair.fwd.blast_hits = 0
-                    pair.rev.blast_hits = 0
+                blast_out_string = strings[index]
+                if blast_out_string == "":
+                    for pair in amplicon.primer_set.set:
+                        pair.fwd.blast_hits = 0
+                        pair.rev.blast_hits = 0
                 else:
-                    blat_out_string = blat_out_string.split("\n")
-
-                    for line in blat_out_string:
+                    for line in blast_out_string.split("\n"):
                         act_result = line.strip().split("\t")
                         if float(act_result[10]) < 0.1:
                             blast_hits.append(act_result[0])
 
-                    for i, pair in enumerate(amplicon.primer_set.set):
+                    for pair in amplicon.primer_set.set:
                         pair.fwd.blast_hits = blast_hits.count(pair.name + "_fwd")
                         pair.rev.blast_hits = blast_hits.count(pair.name + "_rev")
 

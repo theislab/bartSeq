@@ -118,7 +118,8 @@ def primerselect():
             with (PATH_PREFIX / "config.cfg").open("r") as config_handle:
                 config = PsConfiguration.read_config(config_handle)
             config.p3_config_path = filename
-            config.p3_thermo_path = str(PATH_PREFIX.parent / "primer3_config") + "/"
+            config.p3_thermo_path = str(PATH_PREFIX.parent / "primer3_config")
+            config.blast_dbpath = str(PATH_PREFIX.parent / "databases")
             config.blast_dbname = form.blast_db.data
             config.blast_max_hits = int(form.blast_hits.data)
             if form.input.data.count(">") < 2:

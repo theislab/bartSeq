@@ -1,13 +1,11 @@
 import re
 import sys
-import shlex
-import subprocess
 from typing import TextIO
 
 from Bio import SeqIO
 from Bio.SeqFeature import FeatureLocation
 
-from ..helpers import parse_p3_information
+from ..helpers import parse_p3_information, run_and_feed
 from ..helpers.primerpair import PrimerPair, PrimerPairSet
 from ..helpers.primer import Primer, Amplicon, Gene, ExcludedRegion, TargetRegion
 from . import PsConfiguration
@@ -130,36 +128,16 @@ class PrimerPredictor:
                     input_string += "\n"
 
                 input_string += "P3_FILE_FLAG=0\n"
-                input_string += (
-                    "PRIMER_THERMODYNAMIC_PARAMETERS_PATH="
-                    + self.config.p3_thermo_path
-                    + "\n="
-                )
-
-                args = [
-                    self.config.p3_path,
-                    f"-p3_settings_file={self.config.p3_config_path}",
-                ]
+                # This is badly programmed and NEEDS that trailing slash
+                input_string += f"PRIMER_THERMODYNAMIC_PARAMETERS_PATH={self.config.p3_thermo_path}/\n="
 
                 print(input_string)
-
-                try:
-                    p = subprocess.run(
-                        args,
-                        input=input_string,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        text=True,
-                        encoding="utf-8",
-                        check=True,
-                    )
-                except subprocess.CalledProcessError as e:
-                    raise Exception(
-                        f"Could not run primer3. Returncode: {e.returncode}\n"
-                        f"STDOUT:\n\n{e.stdout}\n\n"
-                        f"STDERR:\n\n{e.stderr}\n\n"
-                    )
-
+                p = run_and_feed(
+                    self.config.p3_path,
+                    p3_settings_file=self.config.p3_config_path,
+                    _input_str=input_string,
+                    _long_arg_prefix="-",
+                )
                 p3_output = p.stdout.strip()
                 print(p3_output)
 
