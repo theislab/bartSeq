@@ -9,7 +9,7 @@
     </div>
 {% endif %}
 
-<form class="form-horizontal" method=POST action="/p3seq" enctype=multipart/form-data>
+<form class="form-horizontal" method=POST action="{{ url_for('p3seq') }}" enctype=multipart/form-data>
   {{ form.hidden_tag() }}
   <div class="form-group row">
     {{ form.input.label }}

@@ -1,26 +1,37 @@
 <h3>Rank 1: Sum MFE=-{{ arrangement0 }}</h3>
 <div id=p3select-results class="accordion mb-3" role=tablist aria-multiselectable=true>
 {% for primer_pair, name, amplicon in pairs %}
+{% set found = not primer_pair.predefined %}
 
 <div  class="card">
   <div class="card-header" role="tab" id="heading-{{ name }}">
     <h5 class="mb-0">
-      {% if primer_pair.predefined %}
-        {{ name }}:
-        {{ primer_pair.fwd.sequence.upper() }} – {{ primer_pair.rev.sequence.upper() }}
-        &emsp;Predefined
-      {% else %}
-        <button
-          class="btn btn-link"
-          data-toggle=collapse
-          data-target="#collapse-{{ name }}"
-          aria-expanded=false
-          aria-controls="collapse-{{ name }}"
-        >
-          {{ name }} (sequence {{ amplicon + 1 }}):
-          {{ primer_pair.fwd.sequence.upper() }} – {{ primer_pair.rev.sequence.upper() }}
-          &emsp;Product Size: {{ primer_pair.product_size }}
-        </button>
+      {% if found %}
+      <button
+        class="btn btn-link btn-block"
+        data-toggle=collapse
+        data-target="#collapse-{{ name }}"
+        aria-expanded=false
+        aria-controls="collapse-{{ name }}"
+      >
+      {% endif %}
+        <div class="row">
+          <div class="col-sm row">
+            {% if found %}
+            <div class="col">{{ name }} (sequence&nbsp;{{ amplicon + 1 }}):</div>
+            <div class="col">Product&nbsp;Size: {{ primer_pair.product_size }}</div>
+            {% else %}
+            <div class="col">{{ name }}:</div>
+            <div class="col">Predefined</div>
+            {% endif %}
+          </div>
+          <div class="col-sm row">
+            <div class="col">{{ primer_pair.fwd.sequence.upper() }}</div>
+            <div class="col">{{ primer_pair.rev.sequence.upper() }}</div>
+          </div>
+        </div>
+      {% if found %}
+      </button>
       {% endif %}
     </h5>
   </div>
@@ -32,30 +43,17 @@
     data-parent="#p3select-results"
   >
     <div class="card-body">
-      Forward: {{ primer_pair.fwd.sequence.upper() }}<br>
-      <table style="width:100%">
-        <tr>
-          <td>Position: {{ primer_pair.fwd.location.start }} – {{ primer_pair.fwd.location.end }}</td>
-          <td>BLAST hits: {{ primer_pair.fwd.blast_hits }}</td>
-          <td>Length: {{ primer_pair.fwd | length }}</td>
-          <td>Tm: {{ primer_pair.fwd.tm }}</td>
-          <td>GC%: {{ primer_pair.fwd.gc_content }}</td>
-          <td>Any: {{ primer_pair.fwd.any }}</td>
-          <td>Self: {{ primer_pair.fwd.self }}</td>
-        </tr>
-      </table>
-      Reverse: {{ primer_pair.rev.sequence.upper() }}
-      <table style="width:100%">
-        <tr>
-          <td>Position: {{ primer_pair.rev.location.start }} – {{ primer_pair.rev.location.end }}</td>
-          <td>BLAST hits: {{ primer_pair.rev.blast_hits }}</td>
-          <td>Length: {{ primer_pair.rev | length }}</td>
-          <td>Tm: {{ primer_pair.rev.tm }}</td>
-          <td>GC%: {{ primer_pair.rev.gc_content }}</td>
-          <td>Any: {{ primer_pair.rev.any }}</td>
-          <td>Self: {{ primer_pair.rev.self }}</td>
-        </tr>
-      </table>
+      {% for direc, primer in dict(Forward=primer_pair.fwd, Reverse=primer_pair.rev).items() %}
+      {{ direc }}: {{ primer.sequence.upper() }} (length {{ primer | length }})
+      <div class="row">
+          <div class="col-sm-4 col-lg">Position: {{ primer.location.start }}&nbsp;–&nbsp;{{ primer.location.end }}</div>
+          <div class="col-sm-4 col-lg">BLAST&nbsp;hits: {{ primer.blast_hits }}</div>
+          <div class="col-sm-4 col-lg">Tm: {{ primer.tm }}</div>
+          <div class="col-sm-4 col-lg">GC%: {{ primer.gc_content }}</div>
+          <div class="col-sm-4 col-lg">Any: {{ primer.any }}</div>
+          <div class="col-sm-4 col-lg">Self: {{ primer.self }}</div>
+      </div>
+      {% endfor %}
     </div>
   </div>
   {% endif %}

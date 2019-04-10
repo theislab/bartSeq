@@ -12,7 +12,7 @@ Computation might take a short moment, while page is not responsive.</p>
 {% endif %}
 
 <div class="mb-3">
-<form class="form-horizontal" method="POST" action="/primerselect" enctype=multipart/form-data>
+<form class="form-horizontal" method="POST" action="{{ url_for('primerselect') }}" enctype=multipart/form-data>
   {{ form.hidden_tag() }}
   <div class="form-group row">
     {{ form.input.label }}
@@ -101,17 +101,20 @@ Computation might take a short moment, while page is not responsive.</p>
     </div>
     {% endif %}
   </div>
-  <button class="btn btn-primary" type=submit>Start analysis</button>
+  <button class="btn btn-primary btn-block" type=submit>Start analysis</button>
 </form>
 </div>
 
 {% if pretty_output %}
+<hr>
 {{ pretty_output }}
 {% endif %}
 
 {% if output %}
+<hr>
+
 <p>
-<button type="button" class="btn btn-primary" data-toggle=modal data-target="#output">
+<button type="button" class="btn btn-primary btn-block" data-toggle=modal data-target="#output">
   Show text output
 </button>
 </p>
@@ -136,7 +139,7 @@ Computation might take a short moment, while page is not responsive.</p>
         <pre>{{ output }}</pre>
       </div>
       <div class="modal-footer">
-        <button type=button class="btn btn-primary" data-dismiss=modal>Close</button>
+        <button type=button class="btn btn-primary btn-block" data-dismiss=modal>Close</button>
       </div>
     </div>
   </div>
