@@ -1,16 +1,22 @@
+from typing import Iterable, Sequence
+
 from flask import render_template
 
+from ...helpers.primer import Gene
+from ...primer_select.optimizer import Arrangement
 from .seq_plot import seq_plot
 
 
-def format_primer_set(arrangements, sequence_set):
+def format_primer_set(
+    arrangements: Sequence[Arrangement], sequence_set: Iterable[Gene]
+):
     v = arrangements[0][1]
     w = arrangements[0][2]
     pairs = []
     for j, seq in enumerate(sequence_set):
         amplicon = w[j]
         pset = seq.amplicons[amplicon].primer_set
-        pair = pset.set[v[j]]
+        pair = pset[v[j]]
         pairs.append((pair, pset.name, amplicon))
     return render_template(
         "primer-result.html", arrangement0=arrangements[0][0], pairs=pairs
@@ -46,7 +52,7 @@ def format_seq_primer(sequence_set):
         for seq in sequences:
             str_f = "Forward primers:<table style='width:100%'><tr>"
             str_r = "Reverse primers:<table style='width:100%'><tr>"
-            for i, primer_fwd in enumerate(seq.primer_set_fwd.set):
+            for i, primer_fwd in enumerate(seq.primer_set_fwd):
                 str_f += (
                     "<td>Fwd "
                     + str(i)
@@ -74,7 +80,7 @@ def format_seq_primer(sequence_set):
                 )
             str_f += "</table><br>"
 
-            for i, primer_rev in enumerate(seq.primer_set_rev.set):
+            for i, primer_rev in enumerate(seq.primer_set_rev):
                 str_r += (
                     "<td>Rev "
                     + str(i)

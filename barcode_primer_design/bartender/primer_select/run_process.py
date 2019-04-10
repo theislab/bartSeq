@@ -19,7 +19,7 @@ def output(arrangements: Iterable[Arrangement], sequence_set: Iterable[Gene]) ->
         for j, seq in enumerate(sequence_set):
             amplicon = w[j]
             pset = seq.amplicons[amplicon].primer_set
-            pair = pset.set[v[j]]
+            pair = pset[v[j]]
             output_string += (
                 pset.name
                 + " (sequence "

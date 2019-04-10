@@ -1,6 +1,7 @@
 import re
-import shlex
+from typing import Sequence
 
+from ..helpers.primer import Gene
 from ..helpers import run_and_feed
 
 
@@ -16,7 +17,7 @@ class Cofolder:
 
         return min(mfes)
 
-    def cofold(self, gene_set, linkers):
+    def cofold(self, gene_set: Sequence[Gene], linkers):
         cofold_string_list = []
         pos = 0
         positions = dict()
@@ -27,8 +28,8 @@ class Cofolder:
                 # iterate over amplicons
                 for k in range(0, len(gene_set[i].amplicons)):
                     for l in range(0, len(gene_set[j].amplicons)):
-                        for pair1 in gene_set[i].amplicons[k].primer_set.set:
-                            for pair2 in gene_set[j].amplicons[l].primer_set.set:
+                        for pair1 in gene_set[i].amplicons[k].primer_set:
+                            for pair2 in gene_set[j].amplicons[l].primer_set:
                                 positions[f"{pair1.name}_{k}&{pair2.name}_{l}"] = pos
                                 pos += 12
                                 cofold_string_list += [
@@ -60,16 +61,14 @@ class Cofolder:
             mfe_list = []
             for k in range(0, len(gene_set[i].amplicons)):
                 mfe_list.append([])
-                for pair_index, pair1 in enumerate(
-                    gene_set[i].amplicons[k].primer_set.set
-                ):
+                for pair_index, pair1 in enumerate(gene_set[i].amplicons[k].primer_set):
                     mfe_list[k].append([])
                     for j in range(0, len(gene_set)):
                         mfe_list[k][pair_index].append([])
                         for l in range(0, len(gene_set[j].amplicons)):
                             mfe_list[k][pair_index][j].append([])
                             for pair_index2, pair2 in enumerate(
-                                gene_set[j].amplicons[l].primer_set.set
+                                gene_set[j].amplicons[l].primer_set
                             ):
                                 if i <= j:
                                     pos = positions[

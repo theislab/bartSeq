@@ -3,11 +3,18 @@ import os
 import pickle
 from pathlib import Path
 
-from flask import Flask, Markup, render_template, make_response, url_for
+from flask import Flask, Markup, render_template, make_response, url_for, abort
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from werkzeug.utils import secure_filename, redirect
-from wtforms import StringField, validators, TextAreaField, SelectField, Field
+from wtforms import (
+    validators,
+    StringField,
+    TextAreaField,
+    SelectField,
+    FileField,
+    Field,
+)
 
 from ..p3seq import P3Seq
 from .. import primer_select
@@ -37,7 +44,10 @@ class HorizontalForm(FlaskForm):
         for field in self:
             if not field.render_kw:
                 field.render_kw = {}
-            field.render_kw["class_"] = "col-sm-10 form-control"
+            is_file = isinstance(field, FileField)
+            field.render_kw[
+                "class_"
+            ] = f"col-sm-10 form-control{'-file' if is_file else ''}"
             field.label = field.label(class_="col-sm-2 col-form-label")
 
 
@@ -155,6 +165,8 @@ def primerselect():
 
 @app.route("/last-run")
 def last_run():
+    if not app.debug:
+        abort(404)
     form = PrimerSelectForm()
     opt_result, sequence_set = pickle.loads(Path("last-run.pickle").read_bytes())
     output = primer_select.output(opt_result, sequence_set)

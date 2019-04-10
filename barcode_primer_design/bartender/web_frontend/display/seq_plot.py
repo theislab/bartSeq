@@ -20,7 +20,7 @@ def seq_plot(sequence: Amplicon, title: str = ""):
         if type(f) is ExcludedRegion:
             gds_features.add_feature(f, name="Excluded", color=colors.red, label=False)
 
-    for i, fwd in enumerate(sequence.primer_set_fwd.set):
+    for i, fwd in enumerate(sequence.primer_set_fwd):
         gds_features.add_feature(
             fwd,
             name="Fwd " + str(i),
@@ -31,7 +31,7 @@ def seq_plot(sequence: Amplicon, title: str = ""):
             arrowhead_length=0.25,
         )
 
-    for i, rev in enumerate(sequence.primer_set_rev.set):
+    for i, rev in enumerate(sequence.primer_set_rev):
         gds_features.add_feature(
             rev,
             name="Rev " + str(i),

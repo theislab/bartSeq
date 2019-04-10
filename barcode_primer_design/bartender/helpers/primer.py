@@ -1,12 +1,16 @@
-from typing import Optional, List
+from collections.abc import MutableSequence
+from typing import Optional, List, Iterator, Iterable
 
 from Bio.SeqFeature import SeqFeature, FeatureLocation
 
 
 class Amplicon:
     def __init__(self, sequence: str):
+        from ..helpers.primerpair import PrimerPairSet
+
         self.sequence = sequence
         self.features: List[SeqFeature] = []
+        self.primer_set: Optional[PrimerPairSet] = None
         self.primer_set_fwd: Optional[PrimerSet] = None
         self.primer_set_rev: Optional[PrimerSet] = None
 
@@ -71,13 +75,25 @@ class Primer(SeqFeature):
         return len(self.sequence)
 
 
-class PrimerSet:
-    def __init__(self, name: str):
+class PrimerSet(MutableSequence, Iterable[Primer]):
+    def __init__(self, name: str, items: Iterable[Primer] = ()):
         self.name = name
-        self.set: List[Primer] = []
+        self._set: List[Primer] = list(items)
+
+    def insert(self, i: int, o: Primer) -> None:
+        self._set.insert(i, o)
+
+    def __getitem__(self, i: int) -> Primer:
+        return self._set[i]
+
+    def __setitem__(self, i: int, o: Primer) -> None:
+        self._set[i] = o
+
+    def __delitem__(self, i: int) -> None:
+        del self._set[i]
+
+    def __iter__(self) -> Iterator[Primer]:
+        return iter(self._set)
 
     def __len__(self) -> int:
-        return len(self.set)
-
-    def append(self, primer: Primer):
-        self.set.append(primer)
+        return len(self._set)

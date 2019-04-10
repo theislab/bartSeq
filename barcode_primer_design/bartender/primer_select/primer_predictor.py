@@ -1,6 +1,6 @@
 import re
 import sys
-from typing import TextIO
+from typing import TextIO, MutableMapping
 
 from Bio import SeqIO
 from Bio.SeqFeature import FeatureLocation
@@ -19,7 +19,9 @@ class PrimerPredictor:
         self.input_handle = input_handle
         self.predefined_handle = predefined_handle
 
-    def parse_predefined_pairs(self, predefined_sets):
+    def parse_predefined_pairs(
+        self, predefined_sets: MutableMapping[str, PrimerPairSet]
+    ):
         for record in SeqIO.parse(self.predefined_handle, "fasta"):
             cur_id = record.id.split("_")[0]
             seq = str(record.seq)
@@ -44,7 +46,7 @@ class PrimerPredictor:
             pair_ind = 0
             if cur_id in predefined_sets:
                 act_set = predefined_sets[cur_id]
-                for pair in act_set.set:
+                for pair in act_set:
                     ind = int(pair.name.split("_")[1])
                     if ind > pair_ind:
                         pair_ind = ind
@@ -52,7 +54,7 @@ class PrimerPredictor:
             else:
                 act_set = predefined_sets[cur_id] = PrimerPairSet(cur_id)
 
-            act_set.set.append(
+            act_set.append(
                 PrimerPair(
                     Primer(seqs[0], 0),
                     Primer(seqs[1], 0, reverse=True),
@@ -70,7 +72,7 @@ class PrimerPredictor:
         for record in SeqIO.parse(self.input_handle, "fasta"):
             gene = Gene(record.id)
             sequence = str(record.seq)
-            for sel_sequence in re.split(r"//", sequence):
+            for i, sel_sequence in enumerate(re.split(r"//", sequence)):
                 s = re.sub(r"[\[\]<>]", "", sel_sequence)
                 amplicon = Amplicon(s)
 
@@ -111,17 +113,17 @@ class PrimerPredictor:
                 if sel_sequence.find("[") >= 0 and sel_sequence.find("]") >= 0:
                     input_string += "SEQUENCE_TARGET="
                     spl_sequence = re.split(r"[\[\]]", sel_sequence)
-                    for i in range(0, len(spl_sequence) - 1, 2):
+                    for i_ in range(0, len(spl_sequence) - 1, 2):
                         start = 0
-                        for j in range(0, i + 1):
+                        for j in range(0, i_ + 1):
                             start += len(spl_sequence[j])
                         input_string += (
-                            str(start + 1) + "," + str(len(spl_sequence[i + 1])) + " "
+                            str(start + 1) + "," + str(len(spl_sequence[i_ + 1])) + " "
                         )
                         amplicon.add_feature(
                             TargetRegion(
                                 FeatureLocation(
-                                    start + 1, start + len(spl_sequence[i + 1])
+                                    start + 1, start + len(spl_sequence[i_ + 1])
                                 )
                             )
                         )
