@@ -1,6 +1,7 @@
 from configparser import RawConfigParser
 from dataclasses import dataclass
-from typing import TextIO
+from pathlib import Path
+from typing import Union, Iterable
 
 
 @dataclass
@@ -18,7 +19,7 @@ class PsConfiguration:
     opt_max_temp: int
 
     @staticmethod
-    def write_standard_config(path):  # Write the standard settings file
+    def write_standard_config(path: Path):  # Write the standard settings file
         """ Write the standard settings file
         """
         config = RawConfigParser()
@@ -42,15 +43,23 @@ class PsConfiguration:
         config.set("Optimization", "steps", 500)
         config.set("Optimization", "maxTemp", 15)
 
-        with open(path, "w") as configfile:
+        with path.open("w") as configfile:
             config.write(configfile)
 
     @staticmethod
-    def read_config(handle: TextIO) -> "PsConfiguration":  # Read the settings file
-        """ Read the settings file
+    def read_config(
+        file: Union[Iterable[str], Path]
+    ) -> "PsConfiguration":  # Read the settings file
+        """
+        Read the settings file, either from a path or from an iterable
+        over strings (such as a file-like object or a list of strings)
         """
         config = RawConfigParser()
-        config.read_file(handle)
+        if isinstance(file, Path):
+            with file.open() as fh:
+                config.read_file(fh)
+        else:
+            config.read_file(file)
         return PsConfiguration(
             max_threads=config.getint("DEFAULT", "threads"),
             p3_path=config.get("Primer3", "path"),

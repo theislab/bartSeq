@@ -33,7 +33,7 @@ ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif", "cfg"}
 app = Flask(__name__)
 app.secret_key = "A0Zr98j/3yX R~XHH!jmN]LWX/,?RT"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-with (PATH_PREFIX / "config.cfg").open("r") as f:
+with (PATH_PREFIX / "config.cfg").open() as f:
     predefined_config = f.read()
 
 
@@ -65,7 +65,7 @@ class PrimerSelectForm(HorizontalForm):
         "BLAST database",
         choices=[
             ("hg38.fa", "UCSC Genome hg38"),
-            ("hg19ucsc", "UCSC Genome hg19"),
+            ("hg19.fa", "UCSC Genome hg19"),
             ("refMrna.fa", "RefSeq mRNA"),
             ("mrna.fa", "GenBank mRNA"),
         ],
@@ -117,9 +117,9 @@ def primerselect():
             form.configuration.data.save(filename)
 
             # fix up config files
-            with io.open(filename, "r") as infile:
+            with open(filename) as infile:
                 lines = infile.readlines()
-                with io.open(filename, "w", newline="\n") as outfile:
+                with open(filename, "w", newline="\n") as outfile:
                     for line in lines:
                         line = line.replace(
                             "http://primer3.sourceforge.net", "http://primer3.org"
@@ -128,8 +128,7 @@ def primerselect():
         except AttributeError as e:
             filename = str(PATH_PREFIX / "web_frontend" / "primer3_settings.txt")
 
-        with (PATH_PREFIX / "config.cfg").open("r") as config_handle:
-            config = PsConfiguration.read_config(config_handle)
+        config = PsConfiguration.read_config(PATH_PREFIX / "config.cfg")
         config.p3_config_path = filename
         config.p3_thermo_path = str(PATH_PREFIX.parent / "primer3_config")
         config.blast_dbpath = str(PATH_PREFIX.parent / "databases")
@@ -191,8 +190,7 @@ def p3seq():
             else:
                 filename = str(PATH_PREFIX / "web_frontend" / "primer3_settings.txt")
 
-            with (PATH_PREFIX / "config.cfg").open("r") as config_handle:
-                config = PsConfiguration.read_config(config_handle)
+            config = PsConfiguration.read_config(PATH_PREFIX / "config.cfg")
             config.p3_config_path = filename
 
             p3_seq = P3Seq(config, input_string)

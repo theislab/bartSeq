@@ -1,9 +1,13 @@
 import argparse
-import os
 from contextlib import suppress
+from pathlib import Path
 
 from .ps_configuration import PsConfiguration
 from . import predict_primerset, optimize, output
+
+
+HERE = Path(__file__).parent
+PATH_CFG = HERE.parent / "config.cfg"
 
 
 parser = argparse.ArgumentParser(description="Run the PrimerSelect pipeline.")
@@ -29,16 +33,15 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-if not os.path.isfile("../config.cfg"):
-    PsConfiguration.write_standard_config("../config.cfg")
+if not PATH_CFG.is_file():
+    PsConfiguration.write_standard_config(PATH_CFG)
 
-with open("../config.cfg", "r") as config_handle:
-    config = PsConfiguration.read_config(config_handle)
+config = PsConfiguration.read_config(PATH_CFG)
 
 linkers = ["ATGCGCATTC", "AGCGTAACCT"]
 
-predef_handle = open(args.predefined, "r") if args.predefined else suppress()
-with predef_handle, open(args.input, "r") as input_handle:
+predef_handle = open(args.predefined) if args.predefined else suppress()
+with predef_handle, open(args.input) as input_handle:
     primer_sets = predict_primerset(config, input_handle, predef_handle, linkers)
 
 print("Blast done")
