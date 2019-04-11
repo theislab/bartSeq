@@ -17,6 +17,7 @@ from wtforms import (
     FileField,
     Field,
 )
+from wtforms.fields.html5 import IntegerField
 
 from ..p3seq import P3Seq
 from .. import primer_select
@@ -67,8 +68,8 @@ class PrimerSelectForm(HorizontalForm):
         "Primer3 configuration file",
         validators=[FileAllowed(["txt"], "Text files only!")],
     )
-    blast_hits = StringField(
-        "Max. BLAST hits", validators=[validators.DataRequired()], default="5"
+    blast_hits = IntegerField(
+        "Max. BLAST hits", validators=[validators.DataRequired()], default=5
     )
     blast_db = SelectField(
         "BLAST database",
@@ -85,11 +86,11 @@ class PrimerSelectForm(HorizontalForm):
 
 class P3seqForm(HorizontalForm):
     input = TextAreaField("Input Sequences", validators=[validators.DataRequired()])
-    spacing = StringField(
-        "Range spacing", validators=[validators.DataRequired()], default="500"
+    spacing = IntegerField(
+        "Range spacing", validators=[validators.DataRequired()], default=500
     )
-    interval = StringField(
-        "Range interval", validators=[validators.DataRequired()], default="250"
+    interval = IntegerField(
+        "Range interval", validators=[validators.DataRequired()], default=250
     )
     configuration = FileField(
         "Primer3 configuration file",
@@ -142,7 +143,7 @@ def primerselect():
         config.p3_thermo_path = str(PATH_PREFIX.parent / "primer3_config")
         config.blast_dbpath = str(PATH_PREFIX.parent / "databases")
         config.blast_dbname = form.blast_db.data
-        config.blast_max_hits = int(form.blast_hits.data)
+        config.blast_max_hits = form.blast_hits.data
         if form.input.data.count(">") < 2:
             raise Exception(
                 "You have to provide at least two input sequences in FASTA format."
@@ -191,31 +192,29 @@ def last_run():
 def p3seq():
     form = P3seqForm()
 
-    if form.validate_on_submit():
-        input_string = io.StringIO(form.input.data)
-        try:
-            if form.configuration.data.filename != "":
-                filename = secure_filename(
-                    os.path.join("uploads", form.configuration.data.filename)
-                )
-                form.configuration.data.save(filename)
-            else:
-                filename = str(PATH_PREFIX / "web_frontend" / "primer3_settings.txt")
+    if not form.validate_on_submit():
+        return render_template("p3seq.html", form=form)
 
-            config = PsConfiguration.read_config(PATH_PREFIX / "config.cfg")
-            config.p3_config_path = filename
-
-            p3_seq = P3Seq(config, input_string)
-            output = p3_seq.run(
-                form.spacing.data.split(","), form.interval.data.split(",")
+    input_string = io.StringIO(form.input.data)
+    try:
+        if form.configuration.data.filename != "":
+            filename = secure_filename(
+                os.path.join("uploads", form.configuration.data.filename)
             )
-            output_html = format_seq_primer(output)
-            return render_template("p3seq.html", form=form, output=Markup(output_html))
-        except Exception as inst:
-            log.error(str(inst))
-            return render_template("p3seq.html", form=form, error=inst.args[0])
+            form.configuration.data.save(filename)
+        else:
+            filename = str(PATH_PREFIX / "web_frontend" / "primer3_settings.txt")
 
-    return render_template("p3seq.html", form=form)
+        config = PsConfiguration.read_config(PATH_PREFIX / "config.cfg")
+        config.p3_config_path = filename
+
+        p3_seq = P3Seq(config, input_string)
+        output = p3_seq.run(form.spacing.data.split(","), form.interval.data.split(","))
+        output_html = format_seq_primer(output)
+        return render_template("p3seq.html", form=form, output=Markup(output_html))
+    except Exception as inst:
+        log.error(str(inst))
+        return render_template("p3seq.html", form=form, error=inst.args[0])
 
 
 @app.route("/plot.png")
