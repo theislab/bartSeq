@@ -1,9 +1,11 @@
 import io
 import os
 import pickle
+from logging import getLogger, basicConfig
 from pathlib import Path
 
 from flask import Flask, Markup, render_template, make_response, url_for, abort
+from flask_socketio import SocketIO, emit
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from werkzeug.utils import secure_filename, redirect
@@ -30,9 +32,16 @@ UPLOAD_FOLDER = os.path.join("web_frontend", "uploads")
 ALLOWED_EXTENSIONS = {"txt", "pdf", "png", "jpg", "jpeg", "gif", "cfg"}
 
 
+basicConfig(
+    level="INFO", format="[%(asctime)s] %(levelname)s in %(module)s: %(message)s"
+)
+log = getLogger(__name__)
+
 app = Flask(__name__)
 app.secret_key = "A0Zr98j/3yX R~XHH!jmN]LWX/,?RT"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+socketio = SocketIO(app)
+
 with (PATH_PREFIX / "config.cfg").open() as f:
     predefined_config = f.read()
 
@@ -138,15 +147,18 @@ def primerselect():
             raise Exception(
                 "You have to provide at least two input sequences in FASTA format."
             )
+        socketio.emit("progress", dict(percent=0))
         sequence_set = primer_select.predict_primerset(
             input_handle=input_string,
             predefined_handle=predefined,
             config=config,
             linkers=(form.left_linker.data, form.right_linker.data),
         )
+        socketio.emit("progress", dict(percent=50))
         opt_result = primer_select.optimize(
             config, sequence_set, (form.left_linker.data, form.right_linker.data)
         )
+        socketio.emit("progress", dict(percent=100))
         output = primer_select.output(opt_result, sequence_set)
         if app.debug:
             Path("last-run.pickle").write_bytes(
@@ -200,7 +212,7 @@ def p3seq():
             output_html = format_seq_primer(output)
             return render_template("p3seq.html", form=form, output=Markup(output_html))
         except Exception as inst:
-            print(inst)
+            log.error(str(inst))
             return render_template("p3seq.html", form=form, error=inst.args[0])
 
     return render_template("p3seq.html", form=form)
@@ -217,4 +229,4 @@ def plot():
 
 if __name__ == "__main__":
     # Set set the environment variable FLASK_DEBUG=1 if you want to debug
-    app.run(host="0.0.0.0", port=5000)
+    socketio.run(app, host="0.0.0.0", port=5000)

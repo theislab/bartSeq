@@ -1,8 +1,11 @@
 import copy
 import math
 import random
+from logging import getLogger
 from typing import List, Tuple
 
+
+log = getLogger(__name__)
 
 Arrangement = Tuple[float, List[int], List[int]]
 
@@ -22,6 +25,7 @@ class Optimizer:
         return sum_mfes / 2
 
     def optimize(self) -> List[Arrangement]:
+        log.info("optimizing")
         max_ind = self.config.opt_steps
         max_temperature = min(self.config.opt_max_temp, self.config.opt_steps)
 
@@ -56,7 +60,12 @@ class Optimizer:
             #     print ((i/math.floor(max_ind))*100,"%")
 
             if i % 1000 == 0:
-                print(no_change, act_temperature, self.f(v, w))
+                log.info(
+                    "No change: %s, temp: %s, f(v, w) = %s",
+                    no_change,
+                    act_temperature,
+                    self.f(v, w),
+                )
 
             if i % temp_steps == 0 and act_temperature != 0:
                 act_temperature += -1

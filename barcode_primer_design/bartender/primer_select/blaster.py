@@ -1,5 +1,6 @@
-from multiprocessing.pool import ThreadPool
 import os
+from multiprocessing.pool import ThreadPool
+from logging import getLogger
 from typing import List, Iterable
 
 from ..helpers.primerpair import PrimerPairSet
@@ -7,12 +8,15 @@ from ..helpers.primer import Gene
 from ..helpers import run_and_feed
 
 
+log = getLogger(__name__)
+
+
 class Blaster:
     def __init__(self, config):
         self.config = config
 
     def run_task(self, input: str):
-        print(f"BLASTing primer {input.split('_')[0]}")
+        log.info("BLASTing primer %s", input.split("_")[0])
         p = run_and_feed(
             self.config.blast_path,
             reward=1,
@@ -78,12 +82,13 @@ class Blaster:
                         and pair.rev.blast_hits <= self.config.blast_max_hits
                     ],
                 )
-                print(gene.name, len(amplicon.primer_set))
+                log.info("Gene %s of length %s", gene.name, len(amplicon.primer_set))
 
                 if len(amplicon.primer_set) == 0:
-                    print(
+                    log.warning(
                         "WARNING: At least one amplicon was removed from"
-                        f"gene {gene.name} due to too many BLAST hits.\n"
+                        "gene %s due to too many BLAST hits.",
+                        gene.name,
                     )
 
                 index += 1
@@ -92,9 +97,8 @@ class Blaster:
                 amplicon for amplicon in gene.amplicons if len(amplicon.primer_set) != 0
             ]
             if len(gene.amplicons) == 0:
-                print("Remove", gene.name)
+                log.error("Remove %s", gene.name)
                 raise Exception(
-                    "No primers left for "
-                    + gene.name
-                    + ". Consider less restrictive BLAST settings."
+                    f"No primers left for {gene.name}. "
+                    "Consider less restrictive BLAST settings."
                 )

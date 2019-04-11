@@ -1,8 +1,12 @@
 import configparser
 import re
+from logging import getLogger
 
 from .primer import Primer, ExcludedRegion
 from .primerpair import PrimerPair
+
+
+log = getLogger(__name__)
 
 
 def parse_p3_information(primer_pair_set, p3output):
@@ -10,7 +14,7 @@ def parse_p3_information(primer_pair_set, p3output):
     content = configparser.RawConfigParser()
     content.read_string(ini_str)
 
-    print(content)
+    log.info("P3 Config: %s", content)
 
     num_primers = content.getint("root", "PRIMER_PAIR_NUM_RETURNED")
     for i in range(num_primers):
@@ -83,8 +87,9 @@ def parse_p3seq_information(
                 > 0
             ):
                 overlap = True
-                print(
-                    f"Left primer at position {fwd.location.start} overlaps with excluded region\n"
+                log.info(
+                    "Left primer at position %s overlaps with excluded region",
+                    fwd.location.start,
                 )
                 sequence.warning += (
                     "Left primer at position "
@@ -121,8 +126,9 @@ def parse_p3seq_information(
                 > 0
             ):
                 overlap = True
-                print(
-                    f"Right primer at position {rev.location.start} overlaps with excluded region\n"
+                log.info(
+                    "Right primer at position %s overlaps with excluded region",
+                    rev.location.start,
                 )
                 sequence.warning += (
                     "Right primer at position "

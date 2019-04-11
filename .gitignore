@@ -1,6 +1,8 @@
 /barcode_primer_design/databases/*.nhr
 /barcode_primer_design/databases/*.nin
 /barcode_primer_design/databases/*.nsq
+/barcode_primer_design/*.pickle
+/barcode_primer_design/uploads_*
 
 #####=== Python ===#####
 

@@ -1,8 +1,12 @@
 import re
+from logging import getLogger
 from typing import Sequence
 
 from ..helpers.primer import Gene
 from ..helpers import run_and_feed
+
+
+log = getLogger(__name__)
 
 
 class Cofolder:
@@ -46,7 +50,7 @@ class Cofolder:
         # this is way faster than concatenating the strings inside the loop
         cofold_string = "".join(cofold_string_list)
 
-        print("\nRunning cofold prediction...")
+        log.info("Running cofold prediction...")
 
         p = run_and_feed(
             self.config.rnacf_path,

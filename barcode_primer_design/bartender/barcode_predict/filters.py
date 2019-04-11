@@ -2,13 +2,17 @@ import math
 import random
 import re
 from multiprocessing import Pool
+from logging import getLogger
 
 from Bio import pairwise2
 from Bio.Seq import Seq
 
 
+log = getLogger(__name__)
+
+
 def calculate_alignment(sequences, i):
-    print("seq", i)
+    log.info("seq %s", i)
     seq1 = sequences[i]
     scores = [0] * len(sequences)
     max_penalty = (len(sequences) * len(sequences)) / 2 - len(sequences)
@@ -90,7 +94,13 @@ def simulated_annealing(m):
                     cur_score = new_score
 
         if cur_score > it_score:
-            print(no_change, it_score, cur_score, t)
+            log.info(
+                "no change: %s, it score: %s, cur score: %s, t: %s",
+                no_change,
+                it_score,
+                cur_score,
+                t,
+            )
             no_change = 0
 
         else:

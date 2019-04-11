@@ -74,6 +74,11 @@ docker run \
     python3 -m bartender/web_frontend
 ```
 
+## TODO
+Currently, the `socketio.emit` in the `web_frontend`’s `__main__.py` does nothing as there’s no page rendered yet.
+
+In order to get a progress bar working, we need to directly render the template and execute the pipeline in a thread, and render the output via JS.
+
 ## Authors
 * **Steffen Sass** – *Initial work*
 * **Nikola Müller** – *Initial documentation*

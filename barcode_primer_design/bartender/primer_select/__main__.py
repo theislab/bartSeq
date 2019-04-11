@@ -1,6 +1,7 @@
 import argparse
 from contextlib import suppress
 from pathlib import Path
+from logging import getLogger, basicConfig
 
 from .ps_configuration import PsConfiguration
 from . import predict_primerset, optimize, output
@@ -9,7 +10,7 @@ from . import predict_primerset, optimize, output
 HERE = Path(__file__).parent
 PATH_CFG = HERE.parent / "config.cfg"
 
-
+log = getLogger("primer_select")
 parser = argparse.ArgumentParser(description="Run the PrimerSelect pipeline.")
 
 parser.add_argument(
@@ -31,6 +32,7 @@ parser.add_argument(
     default="",
 )
 
+basicConfig(level="INFO")
 args = parser.parse_args()
 
 if not PATH_CFG.is_file():
@@ -44,7 +46,6 @@ predef_handle = open(args.predefined) if args.predefined else suppress()
 with predef_handle, open(args.input) as input_handle:
     primer_sets = predict_primerset(config, input_handle, predef_handle, linkers)
 
-print("Blast done")
+log.info("Blast done")
 opt_result = optimize(config, primer_sets, linkers)
-output_ = output(opt_result, primer_sets)
-print(output_)
+print(output(opt_result, primer_sets))

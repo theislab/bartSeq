@@ -1,5 +1,6 @@
 import re
 import sys
+from logging import getLogger
 from typing import TextIO, MutableMapping
 
 from Bio import SeqIO
@@ -9,6 +10,9 @@ from ..helpers import parse_p3_information, run_and_feed
 from ..helpers.primerpair import PrimerPair, PrimerPairSet
 from ..helpers.primer import Primer, Amplicon, Gene, ExcludedRegion, TargetRegion
 from . import PsConfiguration
+
+
+log = getLogger(__name__)
 
 
 class PrimerPredictor:
@@ -27,19 +31,19 @@ class PrimerPredictor:
             seq = str(record.seq)
 
             if seq.find("&") == -1:
-                print(
-                    "Please specify fwd and rev primer sequences by separating them with '&' for the predefined "
-                    f"primer {record.id}."
+                log.info(
+                    "Please specify fwd and rev primer sequences by "
+                    "separating them with '&' for the predefined primer %s.",
+                    record.id,
                 )
                 sys.exit(1)
 
             seqs = seq.split("&")
             if len(seqs) != 2:
-                print(
-                    (
-                        "Exactly two primer sequences (fwd&rev) have to provided for the predefined "
-                        f"primer {record.id}."
-                    )
+                log.info(
+                    "Exactly two primer sequences (fwd&rev) have "
+                    "to provided for the predefined primer %s.",
+                    record.id,
                 )
                 sys.exit(1)
 
@@ -133,7 +137,7 @@ class PrimerPredictor:
                 # This is badly programmed and NEEDS that trailing slash
                 input_string += f"PRIMER_THERMODYNAMIC_PARAMETERS_PATH={self.config.p3_thermo_path}/\n="
 
-                print(input_string)
+                log.info(input_string)
                 p = run_and_feed(
                     self.config.p3_path,
                     p3_settings_file=self.config.p3_config_path,
@@ -141,7 +145,7 @@ class PrimerPredictor:
                     _long_arg_prefix="-",
                 )
                 p3_output = p.stdout.strip()
-                print(p3_output)
+                log.info("P3 output: %s", p3_output)
 
                 m = re.search(r"(?<=PRIMER_ERROR=)\w+", p3_output)
                 if m is not None:
@@ -154,7 +158,9 @@ class PrimerPredictor:
                 parse_p3_information(primer_set, p3_output)
 
                 if len(primer_set) == 0:
-                    print(f"WARNING: No primer found for {record.id} sequence {i+1}.")
+                    log.warning(
+                        "WARNING: No primer found for %s sequence %s.", record.id, i + 1
+                    )
                     continue
 
                 amplicon.primer_set = primer_set
@@ -166,8 +172,8 @@ class PrimerPredictor:
                 )
             out_genes.append(gene)
         for key in predefined_sets:
-            print(
-                "WARNING: No input sequence could be found for the predefined primer",
+            log.info(
+                "WARNING: No input sequence could be found for the predefined primer %s",
                 key,
             )
 
