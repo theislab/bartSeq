@@ -1,6 +1,6 @@
-<h3>Rank 1: Sum MFE=-{{ arrangement0 }}</h3>
+<h3>Rank 1: Sum MFE=-{{ score }}</h3>
 <div id=p3select-results class="accordion mb-3" role=tablist aria-multiselectable=true>
-{% for primer_pair, name, amplicon in pairs %}
+{% for primer_pair, name, i_amplicon in pairs %}
 {% set found = not primer_pair.predefined %}
 
 <div  class="card">
@@ -18,7 +18,7 @@
         <div class="row">
           <div class="col-sm row">
             {% if found %}
-            <div class="col">{{ name }} (sequence&nbsp;{{ amplicon + 1 }}):</div>
+            <div class="col">{{ name }} (sequence&nbsp;{{ i_amplicon + 1 }}):</div>
             <div class="col">Product&nbsp;Size: {{ primer_pair.product_size }}</div>
             {% else %}
             <div class="col">{{ name }}:</div>

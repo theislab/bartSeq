@@ -2,12 +2,15 @@ import copy
 import math
 import random
 from logging import getLogger
-from typing import List, Tuple
-
+from typing import List, NamedTuple
 
 log = getLogger(__name__)
 
-Arrangement = Tuple[float, List[int], List[int]]
+
+class Arrangement(NamedTuple):
+    score: float
+    v: List[int]
+    w: List[int]
 
 
 class Optimizer:
@@ -124,7 +127,7 @@ class Optimizer:
                 no_change = 0
             else:
                 no_change += 1
-            combinations.append((self.f(v, w), copy.copy(v), copy.copy(w)))
+            combinations.append(Arrangement(self.f(v, w), copy.copy(v), copy.copy(w)))
             i += 1
 
         unique_arrangements: List[Arrangement] = []

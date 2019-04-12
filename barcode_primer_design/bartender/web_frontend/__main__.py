@@ -3,9 +3,10 @@ import os
 import pickle
 from logging import getLogger, basicConfig
 from pathlib import Path
+from typing import Iterable
 
 from flask import Flask, Markup, render_template, make_response, url_for, abort
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from werkzeug.utils import secure_filename, redirect
@@ -19,10 +20,10 @@ from wtforms import (
 )
 from wtforms.fields.html5 import IntegerField
 
-from bartender.helpers.primer import Amplicon
+from ..helpers.primer import Amplicon, Gene
 from ..p3seq import P3Seq
 from .. import primer_select
-from ..primer_select import PsConfiguration
+from ..primer_select import PsConfiguration, Arrangement
 from .display.seq_plot import seq_plot
 
 IN_DOCKER = "docker" in Path("/proc/1/cgroup").read_text()
@@ -165,7 +166,7 @@ def primerselect():
             Path("last-run.pickle").write_bytes(
                 pickle.dumps((opt_result, sequence_set))
             )
-        pretty_output = Markup(format_primer_set(opt_result, sequence_set))
+        pretty_output = Markup(format_primer_set(opt_result[0], sequence_set))
     except Exception as inst:
         if app.debug:
             raise
@@ -182,24 +183,20 @@ def last_run():
     form = PrimerSelectForm()
     opt_result, sequence_set = pickle.loads(Path("last-run.pickle").read_bytes())
     output = primer_select.output(opt_result, sequence_set)
-    pretty_output = Markup(format_primer_set(opt_result, sequence_set))
+    pretty_output = Markup(format_primer_set(opt_result[0], sequence_set))
     return render_template(
         "primerselect.html", form=form, output=output, pretty_output=pretty_output
     )
 
 
-def format_primer_set(arrangements, sequence_set):
-    v = arrangements[0][1]
-    w = arrangements[0][2]
+def format_primer_set(best_run: Arrangement, sequence_set: Iterable[Gene]):
     pairs = []
     for j, seq in enumerate(sequence_set):
-        amplicon = w[j]
-        pset = seq.amplicons[amplicon].primer_set
-        pair = pset[v[j]]
-        pairs.append((pair, pset.name, amplicon))
-    return render_template(
-        "primer-result.html", arrangement0=arrangements[0][0], pairs=pairs
-    )
+        i_amplicon = best_run.w[j]
+        pset = seq.amplicons[i_amplicon].primer_set
+        pair = pset[best_run.v[j]]
+        pairs.append((pair, pset.name, i_amplicon))
+    return render_template("primer-result.html", score=best_run.score, pairs=pairs)
 
 
 @app.route("/p3seq", methods=("GET", "POST"))
