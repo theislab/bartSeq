@@ -19,10 +19,10 @@ from wtforms import (
 )
 from wtforms.fields.html5 import IntegerField
 
+from bartender.helpers.primer import Amplicon
 from ..p3seq import P3Seq
 from .. import primer_select
 from ..primer_select import PsConfiguration
-from .display.format_primerpair import format_seq_primer, format_primer_set
 from .display.seq_plot import seq_plot
 
 IN_DOCKER = "docker" in Path("/proc/1/cgroup").read_text()
@@ -188,6 +188,20 @@ def last_run():
     )
 
 
+def format_primer_set(arrangements, sequence_set):
+    v = arrangements[0][1]
+    w = arrangements[0][2]
+    pairs = []
+    for j, seq in enumerate(sequence_set):
+        amplicon = w[j]
+        pset = seq.amplicons[amplicon].primer_set
+        pair = pset[v[j]]
+        pairs.append((pair, pset.name, amplicon))
+    return render_template(
+        "primer-result.html", arrangement0=arrangements[0][0], pairs=pairs
+    )
+
+
 @app.route("/p3seq", methods=("GET", "POST"))
 def p3seq():
     form = P3seqForm()
@@ -209,18 +223,20 @@ def p3seq():
         config.p3_config_path = filename
 
         p3_seq = P3Seq(config, input_string)
-        output = p3_seq.run(form.spacing.data.split(","), form.interval.data.split(","))
-        output_html = format_seq_primer(output)
+        gene_set = p3_seq.run(
+            form.spacing.data.split(","), form.interval.data.split(",")
+        )
+        output_html = render_template("p3seq-result.html", sequence_set=gene_set)
         return render_template("p3seq.html", form=form, output=Markup(output_html))
     except Exception as inst:
         log.error(str(inst))
         return render_template("p3seq.html", form=form, error=inst.args[0])
 
 
-@app.route("/plot.png")
-def plot():
+@app.route("/plot-{seq}-{title}.png")
+def plot(seq: Amplicon, title: str):
     # TODO
-    output = seq_plot(None)
+    output = seq_plot(seq, title)
     response = make_response(output)
     response.mimetype = "image/png"
     return response

@@ -1,0 +1,47 @@
+<div role=tabpanel>
+  <ul class="nav nav-tabs" role=tablist>
+    {% for s, title in enumerate(reversed(sequence_set.keys())) %}
+    <li role=presentation {% if s == 0 %}class="active"{% endif %}>
+      <a href="#{{ title }}" role=tab data-toggle=tab>{{ title }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+  <div class="tab-content">
+    {% for s, (title, gene) in enumerate(reversed(sequence_set.items())) %}
+    <div
+      style="white-space: pre-wrap;"
+      role=tabpanel
+      class="tab-pane {% if s==0 %}active{% endif %}"
+      id="{{ title }}"
+    >
+      {% for seq in gene.amplicons %}
+      <h4>Spacing: {{ seq.spacing }}; Interval: {{ seq.interval }}</h4>
+      <img src="{{ url_for('plot', sequence=seq, title=title) }}" alt="{{ title }}">
+      {% for name, primer_set in dict(Forward=seq.primer_set_fwd, Reverse=seq.primer_set_rev).items() %}
+      <p>{{ name }} primers:</p>
+      <table style="width: 100%">
+        {% for i, primer in enumerate(primer_set) %}
+        <tr>
+          <td>{{ name }} {{ i }}:</td>"
+          <td>{{ primer.sequence }}</td>"
+          <td>Position: {{ primer.location.start }} – {{ primer.location.end }}</td>"
+          <td>Length: {{ primer | length }}</td>"
+          <td>Tm: {{ primer.tm }}</td>"
+          <td>GC%: {{ primer.gc_content }}</td>"
+          <td>Any: {{ primer.any }}</td>"
+          <td>Self: {{ primer.self }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endfor %}
+      {% if seq.warning %}
+      <div class="alert alert-warning" role=alert>{{ seq.warning }}</div>
+      {% endif %}
+      {% if seq.error %}
+      <div class="alert alert-danger" role=alert>{{ seq.error }}</div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>

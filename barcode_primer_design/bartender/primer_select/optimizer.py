@@ -61,7 +61,7 @@ class Optimizer:
 
             if i % 1000 == 0:
                 log.info(
-                    "No change: %s, temp: %s, f(v, w) = %s",
+                    "No change: %s, temp: %s, score(v, w) = %s",
                     no_change,
                     act_temperature,
                     self.f(v, w),

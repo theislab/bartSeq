@@ -11,29 +11,18 @@ from .rnacofolder import Cofolder
 def output(arrangements: Iterable[Arrangement], sequence_set: Iterable[Gene]) -> str:
     output_string = ""
 
-    for i, run in enumerate(arrangements[0:5]):
-        output_string += "Rank " + str(i + 1) + ": Sum MFE= -" + str(run[0]) + "\n"
+    for i, (score, v, w) in enumerate(arrangements[0:5]):
+        output_string += f"Rank {i + 1}: Sum MFE= -{score}\n"
 
-        v = run[1]
-        w = run[2]
         for j, seq in enumerate(sequence_set):
             amplicon = w[j]
             pset = seq.amplicons[amplicon].primer_set
             pair = pset[v[j]]
             output_string += (
-                pset.name
-                + " (sequence "
-                + str(amplicon + 1)
-                + ")"
-                + "\tfwd: "
-                + pair.fwd.sequence.upper()
-                + "\trev: "
-                + pair.rev.sequence.upper()
-                + "\tBLAST hits: "
-                + str(pair.fwd.blast_hits)
-                + " / "
-                + str(pair.rev.blast_hits)
-                + "\n"
+                f"{pset.name} (sequence {amplicon + 1})"
+                f"\tfwd: {pair.fwd.sequence.upper()}"
+                f"\trev: {pair.rev.sequence.upper()}"
+                f"\tBLAST hits: {pair.fwd.blast_hits} / {pair.rev.blast_hits}\n"
             )
         output_string += "------------------\n"
     return output_string
@@ -43,8 +32,7 @@ def optimize(config, sequence_set, linkers) -> List[Arrangement]:
     cofolder = Cofolder(config)
     cofolder.cofold(sequence_set, linkers)
     optimizer = Optimizer(config, sequence_set)
-    opt_result = optimizer.optimize()
-    return opt_result
+    return optimizer.optimize()
 
 
 def predict_primerset(
