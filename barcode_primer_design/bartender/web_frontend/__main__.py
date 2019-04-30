@@ -42,7 +42,6 @@ log = getLogger(__name__)
 app = Flask(__name__)
 app.secret_key = "A0Zr98j/3yX R~XHH!jmN]LWX/,?RT"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-socketio = SocketIO(app)
 
 with (PATH_PREFIX / "config.cfg").open() as f:
     predefined_config = f.read()
@@ -240,5 +239,22 @@ def plot(seq: Amplicon, title: str):
 
 
 if __name__ == "__main__":
-    # Set set the environment variable FLASK_DEBUG=1 if you want to debug
-    socketio.run(app, host="0.0.0.0", port=5000)
+    # Set the environment variable FLASK_DEBUG=1 if you want to debug
+    from argparse import ArgumentParser, SUPPRESS
+
+    p = ArgumentParser(add_help=False)
+    p.add_argument("-h", "--host", default="0.0.0.0", help="default: %(default)s")
+    p.add_argument("-p", "--port", type=int, default=5000, help="default: %(default)s")
+    p.add_argument(
+        "-?",
+        "--help",
+        action="help",
+        default=SUPPRESS,
+        help="show this help message and exit",
+    )
+    args = p.parse_args()
+
+    socketio = SocketIO(app)
+    if not app.debug:
+        log.info(f"Server started on {args.host}:{args.port}")
+    socketio.run(app, host=args.host, port=args.port)
