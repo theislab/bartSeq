@@ -5,7 +5,7 @@ Software required for Bart-Seq – a cost-effective target enrichment technolog
 Design barcodes using the bartender python software
 
 ## Primer design
-http://icb-bar/primerselect
+http://icb-bar.scidom.de/primerselect
 
 Design primers using a web app, implemented in python in the bartender software
 
