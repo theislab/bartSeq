@@ -1,4 +1,4 @@
-# Warning
+## Warning
 
 To avoid downloading the HTML files instead of the example files by mistake, please make sure to either copy-paste the file contents or download from the links below (Save Link As...)
 
