@@ -1,5 +1,13 @@
 # Primer design and barcode/adapter design
 
+## PrimerSelect Web page
+Tool for designing  multiplex primer pairs for the BART-Seq method:
+http://icb-bar/primerselect
+
+Test files can be found under [example-input-data](https://github.com/theislab/bartSeq/tree/master/barcode_primer_design/example-input-data).
+
+
+##
 ## Prerequisites
 Bartender software relies on python 3.6+ and depends on the packages in `requirements.txt`.
 
