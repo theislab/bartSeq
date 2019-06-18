@@ -2,7 +2,7 @@
 
 ## PrimerSelect Web page
 Tool for designing  multiplex primer pairs for the BART-Seq method:
-http://icb-bar.scidom.de/primerselect
+http://icb-bar.helmholtz-muenchen.de
 
 Test files can be found under [example-input-data](https://github.com/theislab/bartSeq/tree/master/barcode_primer_design/example-input-data).
 
