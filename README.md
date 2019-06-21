@@ -1,4 +1,4 @@
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3251796.svg)](https://doi.org/10.5281/zenodo.3251796)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3252205.svg)](https://doi.org/10.5281/zenodo.3252205)
 
 # Software for Bart-Seq
 Software required for Bart-Seq – a cost-effective target enrichment technology using forward and reverse barcoding to analyze selected set of genes in single cells and/or bulk RNA/DNA samples
@@ -15,7 +15,7 @@ Design primers using a web app, implemented in python in the bartender software
 The demultiplexing pipeline lives in the repository [bartseq-pipeline](https://github.com/theislab/bartseq-pipeline)
 
 ## Normalization
-R code to normalize read counts for Bart-Seq technology
+Sample R script to normalize read counts for Bart-Seq technology
 
 # Authors
 
