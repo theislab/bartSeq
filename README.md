@@ -1,6 +1,4 @@
-<a href="https://zenodo.org/badge/latestdoi/114916342"><img src="https://zenodo.org/badge/114916342.svg" alt="DOI"></a>
-
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3251796.svg)](https://doi.org/10.5281/zenodo.3251796)
 
 # Software for Bart-Seq
 Software required for Bart-Seq – a cost-effective target enrichment technology using forward and reverse barcoding to analyze selected set of genes in single cells and/or bulk RNA/DNA samples
