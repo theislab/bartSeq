@@ -1,7 +1,7 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.3252205.svg)](https://doi.org/10.5281/zenodo.3252205)
 
-# Software for Bart-Seq
-Software required for Bart-Seq – a cost-effective target enrichment technology using forward and reverse barcoding to analyze selected set of genes in single cells and/or bulk RNA/DNA samples
+# Software for BART-Seq
+Software required for BART-Seq – a cost-effective target enrichment technology using forward and reverse barcoding to analyze selected set of genes in single cells and/or bulk RNA/DNA samples
 
 ## Barcode design
 Design barcodes using the bartender python software
